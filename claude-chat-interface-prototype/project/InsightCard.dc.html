@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    @keyframes tern-spin { to { transform: rotate(360deg) } }
+    @keyframes tern-fade-in { from { opacity: 0; transform: translateY(4px) } to { opacity: 1; transform: none } }
+  </style>
+</helmet>
+<div style="display:flex; gap:12px; padding:14px 16px; borderBottom:1px solid oklch(0.28 0.006 60); cursor:default; position:relative" style-hover="background:oklch(0.235 0.006 60)">
+  <div style="flexShrink:0; width:26px; height:26px; borderRadius:7px; display:flex; alignItems:center; justifyContent:center; marginTop:2px; background:{{ kindBg }}; color:{{ kindFg }}; fontSize:10px; fontWeight:600">
+    <sc-if value="{{ isProject }}" hint-placeholder-val="{{ false }}">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="{{ kindFg }}" stroke-width="1.2"><rect x="1.2" y="3" width="11.6" height="9" rx="1.5"></rect><rect x="4.2" y="1.6" width="5.6" height="2.4" rx="1"></rect></svg>
+    </sc-if>
+    <sc-if value="{{ isTask }}" hint-placeholder-val="{{ false }}">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="{{ kindFg }}" stroke-width="1.2"><circle cx="7" cy="7" r="5.6"></circle><path d="M7 4.2V7l2 1.6"></path></svg>
+    </sc-if>
+    <sc-if value="{{ isSkill }}" hint-placeholder-val="{{ true }}">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="{{ kindFg }}" stroke-width="1.2" stroke-linecap="round"><circle cx="4.1" cy="4.1" r="2.5"></circle><path d="M5.9 5.9l5.4 5.4M2.4 2.4l1.7 1.7"></path></svg>
+    </sc-if>
+    <sc-if value="{{ isPrompt }}" hint-placeholder-val="{{ false }}">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="{{ kindFg }}" stroke-width="1.2"><rect x="2.2" y="1.6" width="9.6" height="10.8" rx="1.4"></rect><path d="M4.6 5h4.8M4.6 7.4h4.8M4.6 9.8h2.8"></path></svg>
+    </sc-if>
+  </div>
+  <div style="flex:1; minWidth:0; display:flex; flexDirection:column; gap:6px">
+    <div style="display:flex; alignItems:baseline; gap:8px">
+      <div style="fontSize:13.5px; lineHeight:1.35; color:oklch(0.93 0.004 60); fontWeight:500; textWrap:pretty">{{ title }}</div>
+    </div>
+    <div style="fontSize:12.5px; lineHeight:1.5; color:oklch(0.66 0.006 60); textWrap:pretty">{{ detail }}</div>
+    <div style="display:flex; alignItems:center; gap:10px; marginTop:4px" data-dc-tpl="6">
+      <sc-if value="{{ showPrimary }}" hint-placeholder-val="{{ true }}">
+        <button onClick="{{ onStart }}" style="border:none; borderRadius:6px; padding:5px 11px; fontSize:12px; fontWeight:500; fontFamily:inherit; cursor:pointer; background:oklch(0.75 0.11 175); color:oklch(0.2 0.02 175)" style-hover="background:oklch(0.8 0.11 175)">{{ action }}</button>
+      </sc-if>
+      <sc-if value="{{ isDone }}" hint-placeholder-val="{{ false }}">
+        <button onClick="{{ onView }}" onMouseEnter="{{ onHoverStart }}" onMouseLeave="{{ onHoverEnd }}" onFocus="{{ onHoverStart }}" onBlur="{{ onHoverEnd }}" style="border:none; borderRadius:6px; padding:5px 13px; fontSize:12px; fontWeight:500; fontFamily:inherit; cursor:pointer; background:oklch(0.62 0.15 250); color:oklch(0.98 0.02 250); animation:{{ fadeIn }}" style-hover="background:oklch(0.7 0.15 250)">View</button>
+      </sc-if>
+      <sc-if value="{{ showDismiss }}" hint-placeholder-val="{{ true }}">
+        <button onClick="{{ onDismiss }}" style="border:none; background:none; padding:5px 4px; fontSize:13px; fontFamily:inherit; cursor:pointer; color:oklch(0.82 0.004 60); animation:{{ fadeIn }}" style-hover="color:oklch(0.97 0.004 60)">Dismiss</button>
+      </sc-if>
+    </div>
+    <div style="overflow:hidden; transition: max-height 320ms cubic-bezier(0.22, 0.61, 0.24, 1), opacity 240ms ease; maxHeight:{{ progressMax }}; opacity:{{ progressOpacity }}">
+      <div style="display:flex; alignItems:center; gap:9px; marginTop:8px; padding:9px 11px; borderRadius:8px; background:oklch(0.26 0.02 250); border:1px solid oklch(0.34 0.04 250)">
+        <sc-if value="{{ isRunning }}" hint-placeholder-val="{{ false }}">
+          <span style="width:12px; height:12px; borderRadius:50%; flexShrink:0; border:1.6px solid oklch(0.45 0.05 250); borderTopColor:oklch(0.85 0.12 250); animation: tern-spin 0.75s linear infinite"></span>
+        </sc-if>
+        <sc-if value="{{ isDone }}" hint-placeholder-val="{{ false }}">
+          <span style="width:12px; height:12px; borderRadius:50%; flexShrink:0; background:oklch(0.75 0.11 175); color:oklch(0.2 0.02 175); fontSize:9px; display:flex; alignItems:center; justifyContent:center">✓</span>
+        </sc-if>
+        <span style="fontSize:12px; color:oklch(0.88 0.02 250)">{{ statusText }}</span>
+      </div>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:404,&quot;height&quot;:170},&quot;kind&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;skill&quot;,&quot;task&quot;,&quot;project&quot;,&quot;prompt&quot;],&quot;default&quot;:&quot;skill&quot;,&quot;tsType&quot;:&quot;'skill'|'task'|'project'|'prompt'&quot;},&quot;title&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;You've requested the same digest format in four chats&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;detail&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Saving it as a Skill means you stop restating the format every Monday.&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;action&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Create skill&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;meta&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;4 chats&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;onView&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;() =&gt; void&quot;},&quot;onComplete&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;() =&gt; void&quot;},&quot;onDismiss&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;() =&gt; void&quot;},&quot;onHoverStart&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;() =&gt; void&quot;},&quot;onHoverEnd&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;() =&gt; void&quot;}}">
+const KINDS = {
+  skill:   { bg: "oklch(0.32 0.05 175)", fg: "oklch(0.86 0.09 175)" },
+  task:    { bg: "oklch(0.33 0.05 75)",  fg: "oklch(0.88 0.1 75)" },
+  project: { bg: "oklch(0.32 0.05 280)", fg: "oklch(0.86 0.08 280)" },
+  prompt:  { bg: "oklch(0.3 0.01 60)",   fg: "oklch(0.82 0.006 60)" }
+};
+
+class Component extends DCLogic {
+  renderVals() {
+    const k = KINDS[this.props.kind] || KINDS.prompt;
+    const p = this.props.phase || "idle";
+    return {
+      isSkill: this.props.kind === "skill",
+      isTask: this.props.kind === "task",
+      isProject: this.props.kind === "project",
+      isPrompt: this.props.kind === "prompt",
+      kindBg: k.bg,
+      kindFg: k.fg,
+      title: this.props.title ?? "Insight",
+      detail: this.props.detail ?? "",
+      action: this.props.action ?? "Set up",
+      meta: this.props.meta ?? "",
+      onStart: this.props.onStart || (() => {}),
+      showPrimary: p === "idle",
+      showDismiss: p !== "running",
+      fadeIn: p === "done" ? "tern-fade-in 320ms ease both" : "none",
+      isRunning: p === "running",
+      isDone: p === "done",
+      statusText: this.props.statusText ?? "",
+      progressMax: p === "idle" ? "0px" : "60px",
+      progressOpacity: p === "idle" ? 0 : 1,
+      onView: this.props.onView || (() => {}),
+      onDismiss: this.props.onDismiss || (() => {}),
+      onHoverStart: this.props.onHoverStart || (() => {}),
+      onHoverEnd: this.props.onHoverEnd || (() => {})
+    };
+  }
+}
+</script>
+</body>
+</html>

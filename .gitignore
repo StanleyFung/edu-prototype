@@ -36,6 +36,10 @@ yarn-error.log*
 # vercel
 .vercel
 
+# design handoff — the .zip is a redundant duplicate of the extracted
+# claude-chat-interface-prototype/ folder, which is tracked instead
+Claude chat interface prototype-handoff.zip
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts

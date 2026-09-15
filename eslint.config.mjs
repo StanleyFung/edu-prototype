@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Claude Design handoff bundle — vendored design-tool scaffold, not app source.
+    "claude-chat-interface-prototype/**",
   ]),
 ]);
 
