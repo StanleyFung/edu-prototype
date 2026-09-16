@@ -205,8 +205,13 @@ export default function Workspace({
           );
         }
         if (insight.kind === "skill") {
-          setCreatedSkills((prev) => prev.concat([DIGEST_SKILL]));
-          setActiveSkills((prev) => prev.concat(DIGEST_SKILL.id));
+          // Both skill insights ("i1" on load and NEW_INSIGHT after send)
+          // describe the same Weekly Digest skill — dedupe so accepting
+          // both doesn't add two entries with the same id.
+          setCreatedSkills((prev) =>
+            prev.some((s) => s.id === DIGEST_SKILL.id) ? prev : prev.concat([DIGEST_SKILL])
+          );
+          setActiveSkills((prev) => (prev.includes(DIGEST_SKILL.id) ? prev : prev.concat(DIGEST_SKILL.id)));
         }
         if (insight.kind === "project") setProjectCreated(true);
         if (insight.kind === "prompt") setInstructionsAdded(true);
