@@ -21,6 +21,7 @@
     ::-webkit-scrollbar-thumb { background: oklch(0.32 0.006 60); border-radius: 6px; border: 3px solid oklch(0.185 0.005 60); }
     ::selection { background: oklch(0.4 0.08 175); }
     @keyframes tern-pulse { 0%,100% { opacity: 1 } 50% { opacity: 0.35 } }
+    @keyframes tern-bounce { 0% { transform: translateY(0) scale(1) } 15% { transform: translateY(-9px) scale(1.23) } 34% { transform: translateY(0) scale(0.9) } 50% { transform: translateY(-4px) scale(1.1) } 68% { transform: translateY(0) scale(0.96) } 84% { transform: translateY(-1px) scale(1.02) } 100% { transform: translateY(0) scale(1) } }
     @keyframes tern-plus { 0%,100% { box-shadow: 0 0 0 0 oklch(0.62 0.19 250 / 0.6); outline-color: oklch(0.55 0.13 250); background-color: oklch(0.55 0.16 250) } 50% { box-shadow: 0 0 0 14px oklch(0.62 0.19 250 / 0); outline-color: oklch(0.88 0.15 250); background-color: oklch(0.74 0.15 250) } }
     @keyframes tern-target { 0% { box-shadow: 0 0 0 0 oklch(0.62 0.19 250 / 0.6); outline-color: oklch(0.55 0.13 250); background-color: oklch(0.42 0.12 250 / 0.75) } 50% { box-shadow: 0 0 0 14px oklch(0.62 0.19 250 / 0); outline-color: oklch(0.88 0.15 250); background-color: oklch(0.66 0.12 250 / 0.42) } 100% { box-shadow: 0 0 0 0 oklch(0.62 0.19 250 / 0.6); outline-color: oklch(0.55 0.13 250); background-color: oklch(0.42 0.12 250 / 0.75) } }
   </style>
@@ -72,33 +73,27 @@
 
   <main style="flex:1; minWidth:0; display:flex; flexDirection:column; position:relative">
     <header style="height:52px; flexShrink:0; borderBottom:1px solid oklch(0.23 0.005 60); display:flex; alignItems:center; gap:10px; padding:0 16px; transition: filter 260ms ease; filter:{{ fxMain }}">
-      <div style="display:flex; alignItems:center; gap:6px; padding:5px 9px; borderRadius:7px; fontSize:13.5px; color:oklch(0.9 0.004 60)">{{ headerTitle }}<span style="fontSize:9px; color:oklch(0.6 0.006 60)">▾</span></div>
+      <div style="display:flex; alignItems:center; gap:6px; padding:5px 9px; borderRadius:7px; fontSize:15px; color:oklch(0.9 0.004 60)">{{ headerTitle }}<span style="fontSize:9px; color:oklch(0.6 0.006 60)">▾</span></div>
       <div style="marginLeft:auto; display:flex; alignItems:center; gap:8px">
-        <button onClick="{{ toggleInsights }}" title="Workflow Insights" style="position:relative; display:flex; alignItems:center; gap:8px; border:1px solid oklch(0.3 0.006 60); background:{{ inboxBg }}; borderRadius:8px; padding:6px 11px 6px 9px; cursor:pointer; fontFamily:inherit; fontSize:13px; color:oklch(0.9 0.004 60)" style-hover="background:oklch(0.27 0.005 60)">
+        <button onClick="{{ toggleInsights }}" title="Workflow Insights" style="position:relative; display:flex; alignItems:center; gap:8px; border:1px solid oklch(0.3 0.006 60); background:{{ inboxBg }}; borderRadius:8px; padding:6px 11px 6px 9px; cursor:pointer; fontFamily:inherit; fontSize:15px; color:oklch(0.9 0.004 60)" style-hover="background:oklch(0.27 0.005 60)">
           <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="oklch(0.8 0.006 60)" stroke-width="1.2" stroke-linecap="round"><path d="M7.5 1.6a4 4 0 0 0-2.3 7.3v1.4h4.6V8.9a4 4 0 0 0-2.3-7.3z"></path><path d="M6.1 12.1h2.8M6.5 13.6h2"></path></svg>
           Workflow Insights
           <sc-if value="{{ hasUnread }}" hint-placeholder-val="{{ true }}">
-            <span style="minWidth:17px; height:17px; borderRadius:9px; background:oklch(0.75 0.11 175); color:oklch(0.2 0.02 175); fontSize:11px; fontWeight:600; display:flex; alignItems:center; justifyContent:center; padding:0 5px">{{ unreadCount }}</span>
+            <span style="minWidth:17px; height:17px; borderRadius:9px; background:oklch(0.75 0.11 175); color:oklch(0.2 0.02 175); fontSize:11px; fontWeight:600; display:flex; alignItems:center; justifyContent:center; padding:0 5px; animation:{{ badgeAnim }}">{{ unreadCount }}</span>
           </sc-if>
         </button>
-        <button style="border:1px solid oklch(0.3 0.006 60); background:none; borderRadius:8px; padding:6px 12px; cursor:pointer; fontFamily:inherit; fontSize:13px; color:oklch(0.85 0.004 60)" style-hover="background:oklch(0.26 0.005 60)">Share</button>
+        <button style="border:1px solid oklch(0.3 0.006 60); background:none; borderRadius:8px; padding:6px 12px; cursor:pointer; fontFamily:inherit; fontSize:15px; color:oklch(0.85 0.004 60)" style-hover="background:oklch(0.26 0.005 60)">Share</button>
       </div>
     </header>
 
     <sc-if value="{{ isChat }}" hint-placeholder-val="{{ true }}">
-      <div style="flex:1; overflow:auto; display:flex; flexDirection:column; transition: filter 260ms ease; filter:{{ fxMain }}">
+      <div ref="{{ threadRef }}" style="flex:1; overflow:auto; display:flex; flexDirection:column; transition: filter 260ms ease; filter:{{ fxMain }}">
         <div style="width:100%; maxWidth:760px; margin: 0 auto; padding: 32px 24px 8px; display:flex; flexDirection:column; gap:26px">
           <sc-for list="{{ messages }}" as="m" hint-placeholder-count="4">
             <div style="display:flex; justifyContent:{{ m.justify }}">
               <div style="maxWidth:{{ m.maxWidth }}; background:{{ m.bg }}; borderRadius:{{ m.radius }}; padding:{{ m.pad }}; fontFamily:{{ m.font }}; fontSize:{{ m.size }}; lineHeight:1.62; color:oklch(0.93 0.004 60); textWrap:pretty; whiteSpace:pre-wrap">{{ m.text }}</div>
             </div>
           </sc-for>
-          <sc-if value="{{ showSkillRun }}" hint-placeholder-val="{{ true }}">
-            <div style="border:1px solid oklch(0.3 0.04 175); background:oklch(0.22 0.015 175); borderRadius:10px; padding:12px 14px; display:flex; alignItems:center; gap:10px; fontSize:13px; color:oklch(0.86 0.03 175)">
-              <span style="width:6px; height:6px; borderRadius:50%; background:oklch(0.75 0.11 175); animation: tern-pulse 1.4s ease-in-out infinite"></span>
-              Running skill <strong style="fontWeight:600">Weekly Digest</strong> over 3 sources
-            </div>
-          </sc-if>
         </div>
         <div style="height:24px"></div>
       </div>
@@ -106,6 +101,7 @@
       <div style="flexShrink:0; padding: 0 24px 18px; position:relative; transition: filter 260ms ease; filter:{{ fxComposer }}">
         <div style="width:100%; maxWidth:760px; margin: 0 auto; position:relative">
           <sc-if value="{{ skillsOpen }}" hint-placeholder-val="{{ false }}">
+            <div onClick="{{ closeSkills }}" style="position:fixed; inset:0; zIndex:15"></div>
             <div style="position:absolute; bottom:calc(100% + 8px); left:0; width:340px; background:oklch(0.23 0.005 60); border:1px solid oklch(0.31 0.006 60); borderRadius:12px; boxShadow: 0 18px 50px oklch(0.1 0 0 / 0.55); padding:6px; zIndex:20">
               <div style="display:flex; flexDirection:column; gap:1px">
                 <button style="display:flex; alignItems:center; gap:10px; width:100%; border:none; background:none; borderRadius:8px; padding:8px 10px; cursor:pointer; textAlign:left; fontFamily:inherit; fontSize:13px; color:oklch(0.92 0.004 60)" style-hover="background:oklch(0.27 0.005 60)">
@@ -128,10 +124,15 @@
           </sc-if>
 
           <div style="border:1px solid oklch(0.32 0.006 60); background:oklch(0.215 0.005 60); borderRadius:14px; padding: 10px 12px; display:flex; flexDirection:column; gap:8px">
-            <div style="display:flex; alignItems:center; gap:10px">
+            <div style="display:flex; alignItems:flex-start; gap:10px">
               <button onClick="{{ openSkills }}" style="width:26px; height:26px; borderRadius:50%; border:1px solid {{ plusBorder }}; background:{{ plusHlBg }}; outline:{{ plusRing }}; boxShadow:{{ plusGlow }}; animation:{{ plusAnim }}; transition: background 200ms ease, box-shadow 200ms ease; color:oklch(0.8 0.006 60); cursor:pointer; fontSize:14px; lineHeight:1; fontFamily:inherit" style-hover="background:oklch(0.28 0.005 60)">+</button>
-              <div style="flex:1; fontSize:14.5px; color:oklch(0.55 0.006 60)">Write a message…</div>
-              <div style="fontSize:12.5px; color:oklch(0.62 0.006 60)">Sonnet 4.5 <span style="fontSize:9px">▾</span></div>
+              <textarea ref="{{ inputRef }}" value="{{ draft }}" onChange="{{ onDraft }}" onKeyDown="{{ onKeyDown }}" rows="1" placeholder="Write a message…" style="flex:1; minWidth:0; resize:none; border:none; outline:none; background:transparent; fontFamily:inherit; fontSize:14.5px; lineHeight:1.5; color:oklch(0.93 0.004 60); maxHeight:340px; overflowY:auto"></textarea>
+              <div style="display:flex; alignItems:center; gap:10px">
+                <div style="fontSize:12.5px; color:oklch(0.62 0.006 60)">Sonnet 4.5 <span style="fontSize:9px">▾</span></div>
+                <button onClick="{{ send }}" title="Send" style="width:28px; height:28px; flexShrink:0; borderRadius:8px; border:none; cursor:pointer; display:flex; alignItems:center; justifyContent:center; background:oklch(0.75 0.11 175); color:oklch(0.2 0.02 175)" style-hover="background:oklch(0.82 0.11 175)">
+                  <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 12.4V3.1"></path><path d="M3.6 7l3.9-3.9L11.4 7"></path></svg>
+                </button>
+              </div>
             </div>
             <sc-if value="{{ hasActiveSkills }}" hint-placeholder-val="{{ false }}">
               <div style="display:flex; flexWrap:wrap; gap:6px; paddingLeft:36px">
@@ -141,7 +142,7 @@
               </div>
             </sc-if>
           </div>
-          <div style="textAlign:center; fontSize:11.5px; color:oklch(0.5 0.006 60); marginTop:9px">Prototype — responses are canned.</div>
+          <div style="textAlign:center; fontSize:11.5px; color:oklch(0.5 0.006 60); marginTop:9px">Prototype — responses are canned. Submit the message or hit Send to view the workflow insight creation flow.</div>
         </div>
       </div>
     </sc-if>
@@ -201,7 +202,7 @@
         <div style="fontSize:11.5px; color:oklch(0.55 0.006 60); fontFamily: ui-monospace, Menlo, monospace">{{ openCount }} open</div>
         <button onClick="{{ closeInsights }}" style="marginLeft:auto; border:none; background:none; cursor:pointer; color:oklch(0.62 0.006 60); fontSize:17px; lineHeight:1; fontFamily:inherit; padding:2px 4px" style-hover="color:oklch(0.92 0.004 60)">×</button>
       </div>
-      <p style="margin:0; fontSize:12.5px; lineHeight:1.5; color:oklch(0.62 0.006 60); textWrap:pretty">Patterns spotted across your chats, with the feature that would handle them.</p>
+      <p style="margin:0; fontSize:13px; lineHeight:1.5; color:oklch(0.78 0.005 60); textWrap:pretty">Patterns spotted across your chats, with the feature that would handle them.</p>
       <div style="display:flex; gap:6px">
         <sc-for list="{{ filters }}" as="f" hint-placeholder-count="5">
           <button onClick="{{ f.pick }}" style="border:1px solid {{ f.border }}; background:{{ f.bg }}; color:{{ f.fg }}; borderRadius:20px; padding:4px 11px; fontSize:12px; fontFamily:inherit; cursor:pointer">{{ f.label }}</button>
@@ -250,24 +251,30 @@ const RECENTS = [
   "Untitled"
 ];
 
+const DIGEST_SKILL = { id: "digest", name: "Weekly Digest", desc: "Rolls sources into a fixed summary format" };
+
 const SKILLS = [
-  { id: "digest", name: "Weekly Digest", desc: "Rolls sources into a fixed summary format" },
   { id: "triage", name: "Ticket Triage", desc: "Clusters tickets and drafts replies" },
   { id: "brief", name: "Research Brief", desc: "Sourced findings, three-section output" },
   { id: "notes", name: "Meeting Notes", desc: "Decisions, owners, open questions" }
 ];
 
+const DRAFT = "No that's not right, I want the format to look like this:\n\n## Week of Mar 4\n**Shipped** — one line per item, ticket ID first\n**At risk** — item, owner, blocker\n**Numbers** — p95 latency, error rate, queue depth\n\nNo prose paragraphs, keep it under 150 words.";
+
+const FOLLOW_UP = { role: "ai", text: "Got it — reformatted to that structure.\n\n## Week of Mar 4\n**Shipped** — PLAT-412 queue retries · PLAT-418 audit-log export · PLAT-421 schema migrations\n**At risk** — Rate-limit rewrite, Dana, blocked on load test\n**Numbers** — p95 412ms · error rate 0.28% · queue depth 1.4k" };
+
+const NEW_INSIGHT = { id: "i7", kind: "skill", title: "You just corrected the digest format by hand", detail: "Saving this exact structure as a Skill would keep every future digest in it without you pasting the template.", action: "Create skill" };
+
 const MESSAGES = [
-  { role: "user", text: "Can you pull together the weekly digest for the platform team again? Same format as last time." },
+  { role: "user", text: "Can you pull together the weekly digest for the platform team again?" },
   { role: "ai", text: "Here's this week's digest across the three sources you usually include.\n\nShipped: queue retries, audit-log export, two schema migrations.\nIn review: rate-limit rewrite (blocked on load test), SSO group sync.\nRisks: the migration backlog is growing faster than it's draining." },
-  { role: "user", text: "Great. Do the same thing next Monday and every Monday after that." }
 ];
 
 const INSIGHTS = [
   { id: "i1", kind: "skill", title: "You've requested the same digest format in four chats", detail: "Saving it as a Skill means you stop restating the format every Monday.", action: "Create skill", meta: "4 chats" },
   { id: "i2", kind: "task", title: "\"Do the same thing next Monday\" looks like a recurring job", detail: "A Scheduled Task can run the digest weekly and post the result here.", action: "Schedule it", meta: "this chat" },
   { id: "i3", kind: "project", title: "Six chats reference the same three vendor PDFs", detail: "A Project would hold the files once instead of re-uploading them per chat.", action: "Create project", meta: "6 chats" },
-  { id: "i4", kind: "prompt", title: "You correct tone the same way most sessions", detail: "\"Shorter, no hedging\" appears in 9 of your last 14 chats. Put it in your prompt.md.", action: "Add to prompt.md", meta: "9 of 14" },
+  { id: "i4", kind: "prompt", title: "You correct tone the same way most sessions", detail: "\"Shorter, no hedging\" appears in 9 of the last 14 chats in your Support Triage project. Put it in that project's Instructions.", action: "Add to Instructions", meta: "9 of 14" },
   { id: "i5", kind: "skill", title: "Your triage replies follow a consistent four-part shape", detail: "Turning it into a Skill would keep the structure stable across teammates.", action: "Create skill", meta: "11 chats" },
   { id: "i6", kind: "task", title: "You check the deploy changelog every morning", detail: "A 8:30am task could summarize overnight changes before you ask.", action: "Schedule it", meta: "13 days" }
 ];
@@ -277,7 +284,7 @@ const STEPS = {
   skill:   { steps: ["Updating…", "Reading 4 conversations", "Drafting skill definition", "Validating"], done: "Skill created" },
   task:    { steps: ["Updating…", "Reading the request", "Scheduling", "Validating"], done: "Task scheduled" },
   project: { steps: ["Updating…", "Creating project", "Moving chats", "Attaching files"], done: "Project created" },
-  prompt:  { steps: ["Updating…", "Drafting instruction", "Updating prompt.md", "Validating"], done: "prompt.md updated" }
+  prompt:  { steps: ["Updating…", "Drafting instruction", "Updating Instructions", "Validating"], done: "Instructions updated" }
 };
 const BLUR = "blur(6px)";
 const HL = "oklch(0.58 0.11 250 / 0.5)";
@@ -289,7 +296,6 @@ const FILTERS = [
   { id: "skill", label: "Skills" },
   { id: "task", label: "Tasks" },
   { id: "project", label: "Projects" },
-  { id: "prompt", label: "prompt.md" }
 ];
 
 class Component extends DCLogic {
@@ -299,14 +305,18 @@ class Component extends DCLogic {
     filter: "all",
     dismissed: [],
     skillsOpen: false,
-    activeSkills: ["digest"],
+    activeSkills: [],
+    createdSkills: [],
     taskOff: [],
     extraTasks: [],
     resolved: [],
     runs: {},
     toast: null,
     showSkillRun: false,
-    hoverTarget: null
+    hoverTarget: null,
+    draft: DRAFT,
+    sent: false,
+    newInsight: false
   };
 
   flash(msg) {
@@ -314,6 +324,36 @@ class Component extends DCLogic {
     this.setState({ toast: msg });
     this._t = setTimeout(() => this.setState({ toast: null }), 2600);
   }
+
+  threadRef = React.createRef();
+  inputRef = React.createRef();
+
+  componentDidMount() { this.grow(); setTimeout(() => this.grow(), 60); setTimeout(() => this.grow(), 400); }
+
+  grow() {
+    const el = this.inputRef.current;
+    if (!el) return;
+    el.style.height = "auto";
+    el.style.height = Math.min(el.scrollHeight, 340) + "px";
+  }
+
+  scrollThread() {
+    const el = this.threadRef.current;
+    if (el) el.scrollTop = el.scrollHeight;
+  }
+
+  send = () => {
+    const text = this.state.draft.trim();
+    if (!text || this.state.sent) return;
+    this.setState({ draft: "", sent: true, sentText: text });
+    requestAnimationFrame(() => { this.grow(); this.scrollThread(); });
+    setTimeout(() => { this.setState({ replied: true }); requestAnimationFrame(() => this.scrollThread()); }, 700);
+    setTimeout(() => {
+      this.setState({ newInsight: true, insightsOpen: false, badgeBounce: true });
+      setTimeout(() => this.setState({ badgeBounce: false }), 1900);
+      this.flash("New workflow insight");
+    }, 1900);
+  };
 
   hoverTo(kind) {
     clearTimeout(this._hoverT);
@@ -335,6 +375,7 @@ class Component extends DCLogic {
     this._runT.push(setTimeout(() => {
       this.setRun(ins.id, { phase: "done", step: def.steps.length - 1 });
       const next = { resolved: this.state.resolved.concat(ins.id) };
+      if (ins.kind === "skill") { next.createdSkills = this.state.createdSkills.concat([DIGEST_SKILL]); next.activeSkills = this.state.activeSkills.concat(DIGEST_SKILL.id); }
       if (ins.kind === "task") next.extraTasks = this.state.extraTasks.concat([{ name: ins.title, cadence: "Mondays at 9:00am", next: "in 3 days" }]);
       this.setState(next);
     }, def.steps.length * 780));
@@ -353,7 +394,8 @@ class Component extends DCLogic {
   renderVals() {
     const s = this.state;
     const view = s.view;
-    const open = INSIGHTS.filter(i => !s.dismissed.includes(i.id));
+    const pool = s.newInsight ? [NEW_INSIGHT].concat(INSIGHTS) : INSIGHTS;
+    const open = pool.filter(i => !s.dismissed.includes(i.id));
     const unresolved = open.filter(i => !s.resolved.includes(i.id));
     const visible = open.filter(i => s.filter === "all" || i.kind === s.filter);
     const hl = "oklch(0.26 0.005 60)";
@@ -378,12 +420,21 @@ class Component extends DCLogic {
       goProjects: () => this.setState({ view: "projects", skillsOpen: false }),
       goScheduled: () => this.setState({ view: "scheduled", skillsOpen: false }),
 
-      messages: MESSAGES.map(m => m.role === "user"
+      draft: s.draft,
+      onDraft: e => { this.setState({ draft: e.target.value }); requestAnimationFrame(() => this.grow()); },
+      send: this.send,
+      threadRef: this.threadRef,
+      inputRef: this.inputRef,
+      onKeyDown: e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); this.send(); } },
+      messages: MESSAGES
+        .concat(s.sent ? [{ role: "user", text: s.sentText }] : [])
+        .concat(s.replied ? [FOLLOW_UP] : [])
+        .map(m => m.role === "user"
         ? { text: m.text, justify: "flex-end", maxWidth: "76%", bg: "oklch(0.26 0.005 60)", radius: "14px", pad: "11px 15px", font: "ui-sans-serif, system-ui, sans-serif", size: "14.5px" }
         : { text: m.text, justify: "flex-start", maxWidth: "100%", bg: "transparent", radius: "0", pad: "0", font: "Newsreader, Georgia, serif", size: "17px" }),
       showSkillRun: s.showSkillRun,
 
-      skills: SKILLS.map(sk => {
+      skills: s.createdSkills.concat(SKILLS).map(sk => {
         const on = s.activeSkills.includes(sk.id);
         return {
           name: sk.name, desc: sk.desc,
@@ -397,10 +448,11 @@ class Component extends DCLogic {
         };
       }),
       skillsOpen: s.skillsOpen,
+      closeSkills: () => this.setState({ skillsOpen: false }),
       openSkills: () => this.setState({ view: "chat", skillsOpen: !s.skillsOpen }),
       hasActiveSkills: s.activeSkills.length > 0,
       activeSkillList: s.activeSkills.map(id => ({
-        name: (SKILLS.find(x => x.id === id) || {}).name,
+        name: (s.createdSkills.concat(SKILLS).find(x => x.id === id) || {}).name,
         remove: () => this.setState({ activeSkills: s.activeSkills.filter(x => x !== id), showSkillRun: false })
       })),
 
@@ -445,6 +497,7 @@ class Component extends DCLogic {
       panelTransform: s.insightsOpen ? "translateX(0)" : "translateX(104%)",
       toggleInsights: () => this.setState({ insightsOpen: !s.insightsOpen }),
       closeInsights: () => this.setState({ insightsOpen: false }),
+      badgeAnim: s.badgeBounce ? "tern-bounce 900ms ease-in-out 2" : "none",
       unreadCount: unresolved.length,
       hasUnread: unresolved.length > 0,
       openCount: unresolved.length,

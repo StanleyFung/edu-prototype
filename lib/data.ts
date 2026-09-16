@@ -47,8 +47,13 @@ export const RECENTS: string[] = [
   "Untitled",
 ];
 
+export const DIGEST_SKILL: Skill = {
+  id: "digest",
+  name: "Weekly Digest",
+  desc: "Rolls sources into a fixed summary format",
+};
+
 export const SKILLS: Skill[] = [
-  { id: "digest", name: "Weekly Digest", desc: "Rolls sources into a fixed summary format" },
   { id: "triage", name: "Ticket Triage", desc: "Clusters tickets and drafts replies" },
   { id: "brief", name: "Research Brief", desc: "Sourced findings, three-section output" },
   { id: "notes", name: "Meeting Notes", desc: "Decisions, owners, open questions" },
@@ -57,17 +62,31 @@ export const SKILLS: Skill[] = [
 export const MESSAGES: ChatMessage[] = [
   {
     role: "user",
-    text: "Can you pull together the weekly digest for the platform team again? Same format as last time.",
+    text: "Can you pull together the weekly digest for the platform team again?",
   },
   {
     role: "ai",
     text: "Here's this week's digest across the three sources you usually include.\n\nShipped: queue retries, audit-log export, two schema migrations.\nIn review: rate-limit rewrite (blocked on load test), SSO group sync.\nRisks: the migration backlog is growing faster than it's draining.",
   },
-  {
-    role: "user",
-    text: "Great. Do the same thing next Monday and every Monday after that.",
-  },
 ];
+
+export const DRAFT =
+  "No that's not right, I want the format to look like this:\n\n## Week of Mar 4\n**Shipped** — one line per item, ticket ID first\n**At risk** — item, owner, blocker\n**Numbers** — p95 latency, error rate, queue depth\n\nNo prose paragraphs, keep it under 150 words.";
+
+export const FOLLOW_UP: ChatMessage = {
+  role: "ai",
+  text: "Got it — reformatted to that structure.\n\n## Week of Mar 4\n**Shipped** — PLAT-412 queue retries · PLAT-418 audit-log export · PLAT-421 schema migrations\n**At risk** — Rate-limit rewrite, Dana, blocked on load test\n**Numbers** — p95 412ms · error rate 0.28% · queue depth 1.4k",
+};
+
+export const NEW_INSIGHT: Insight = {
+  id: "i7",
+  kind: "skill",
+  title: "You just corrected the digest format by hand",
+  detail:
+    "Saving this exact structure as a Skill would keep every future digest in it without you pasting the template.",
+  action: "Create skill",
+  meta: "",
+};
 
 export const BASE_TASKS: Task[] = [
   { name: "Platform weekly digest", cadence: "Mondays at 9:00am", next: "in 3 days" },
@@ -104,8 +123,9 @@ export const INSIGHTS: Insight[] = [
     id: "i4",
     kind: "prompt",
     title: "You correct tone the same way most sessions",
-    detail: '"Shorter, no hedging" appears in 9 of your last 14 chats. Put it in your prompt.md.',
-    action: "Add to prompt.md",
+    detail:
+      '"Shorter, no hedging" appears in 9 of the last 14 chats in your Support Triage project. Put it in that project\'s Instructions.',
+    action: "Add to Instructions",
     meta: "9 of 14",
   },
   {
@@ -147,8 +167,8 @@ export const STEPS: Record<InsightKind, RunSteps> = {
     done: "Project created",
   },
   prompt: {
-    steps: ["Updating…", "Drafting instruction", "Updating prompt.md", "Validating"],
-    done: "prompt.md updated",
+    steps: ["Updating…", "Drafting instruction", "Updating Instructions", "Validating"],
+    done: "Instructions updated",
   },
 };
 
@@ -157,7 +177,6 @@ export const FILTERS: FilterDef[] = [
   { id: "skill", label: "Skills" },
   { id: "task", label: "Tasks" },
   { id: "project", label: "Projects" },
-  { id: "prompt", label: "prompt.md" },
 ];
 
 export const KIND_COLORS: Record<InsightKind, { bg: string; fg: string }> = {
@@ -165,6 +184,15 @@ export const KIND_COLORS: Record<InsightKind, { bg: string; fg: string }> = {
   task: { bg: "oklch(0.33 0.05 75)", fg: "oklch(0.88 0.1 75)" },
   project: { bg: "oklch(0.32 0.05 280)", fg: "oklch(0.86 0.08 280)" },
   prompt: { bg: "oklch(0.3 0.01 60)", fg: "oklch(0.82 0.006 60)" },
+};
+
+const PROJECTS_DOC = "https://support.claude.com/en/articles/9517075-what-are-projects";
+
+export const KIND_DOCS: Record<InsightKind, string> = {
+  skill: "https://support.claude.com/en/articles/12512176-what-are-skills",
+  task: "https://code.claude.com/docs/en/scheduled-tasks",
+  project: PROJECTS_DOC,
+  prompt: PROJECTS_DOC,
 };
 
 /** Default static InsightSource — swap for a real detection pass later. */

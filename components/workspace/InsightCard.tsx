@@ -1,4 +1,4 @@
-import { KIND_COLORS } from "@/lib/data";
+import { KIND_COLORS, KIND_DOCS } from "@/lib/data";
 import type { Insight, RunPhase } from "@/lib/types";
 
 interface InsightCardProps {
@@ -66,6 +66,7 @@ export default function InsightCard({
   const kindColors = KIND_COLORS[insight.kind];
   const showPrimary = phase === "idle";
   const showDismiss = phase !== "running";
+  const showLearn = phase !== "running";
   const isRunning = phase === "running";
   const isDone = phase === "done";
 
@@ -83,7 +84,7 @@ export default function InsightCard({
             {insight.title}
           </div>
         </div>
-        <div className="text-[12.5px] leading-[1.5] text-muted text-pretty">{insight.detail}</div>
+        <div className="text-[13px] leading-[1.5] text-muted-strong text-pretty">{insight.detail}</div>
         <div className="flex items-center gap-2.5 mt-1">
           {showPrimary && (
             <button
@@ -105,6 +106,17 @@ export default function InsightCard({
             >
               View
             </button>
+          )}
+          {showLearn && (
+            <a
+              href={KIND_DOCS[insight.kind]}
+              target="_blank"
+              rel="noopener"
+              className="border border-[oklch(0.36_0.006_60)] rounded-md px-[11px] py-1 text-xs font-medium cursor-pointer no-underline text-[oklch(0.86_0.004_60)] hover:bg-[oklch(0.3_0.005_60)] hover:text-[oklch(0.97_0.004_60)]"
+              style={{ animation: isDone ? "tern-fade-in 320ms ease both" : "none" }}
+            >
+              Learn more
+            </a>
           )}
           {showDismiss && (
             <button

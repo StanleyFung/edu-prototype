@@ -3,16 +3,24 @@ interface HeaderProps {
   blurred: boolean;
   insightsOpen: boolean;
   unreadCount: number;
+  badgeBounce: boolean;
   onToggleInsights: () => void;
 }
 
-export default function Header({ title, blurred, insightsOpen, unreadCount, onToggleInsights }: HeaderProps) {
+export default function Header({
+  title,
+  blurred,
+  insightsOpen,
+  unreadCount,
+  badgeBounce,
+  onToggleInsights,
+}: HeaderProps) {
   return (
     <header
       className="h-[52px] flex-shrink-0 border-b border-[oklch(0.23_0.005_60)] flex items-center gap-2.5 px-4 transition-[filter] duration-[260ms] ease-in-out"
       style={{ filter: blurred ? "blur(6px)" : "none" }}
     >
-      <div className="flex items-center gap-1.5 px-[9px] py-[5px] rounded-[7px] text-[13.5px] text-ink">
+      <div className="flex items-center gap-1.5 px-[9px] py-[5px] rounded-[7px] text-[15px] text-ink">
         {title}
         <span className="text-[9px] text-[oklch(0.6_0.006_60)] ml-1">▾</span>
       </div>
@@ -20,7 +28,7 @@ export default function Header({ title, blurred, insightsOpen, unreadCount, onTo
         <button
           onClick={onToggleInsights}
           title="Workflow Insights"
-          className="relative flex items-center gap-2 border border-[oklch(0.3_0.006_60)] rounded-lg pl-[9px] pr-[11px] py-1.5 cursor-pointer font-sans text-[13px] text-ink hover:bg-[oklch(0.27_0.005_60)]"
+          className="relative flex items-center gap-2 border border-[oklch(0.3_0.006_60)] rounded-lg pl-[9px] pr-[11px] py-1.5 cursor-pointer font-sans text-[15px] text-ink hover:bg-[oklch(0.27_0.005_60)]"
           style={{ background: insightsOpen ? "oklch(0.3 0.03 175)" : "oklch(0.23 0.005 60)" }}
         >
           <svg
@@ -37,12 +45,15 @@ export default function Header({ title, blurred, insightsOpen, unreadCount, onTo
           </svg>
           Workflow Insights
           {unreadCount > 0 && (
-            <span className="min-w-[17px] h-[17px] rounded-full bg-accent text-accent-ink text-[11px] font-semibold flex items-center justify-center px-[5px]">
+            <span
+              className="min-w-[17px] h-[17px] rounded-full bg-accent text-accent-ink text-[11px] font-semibold flex items-center justify-center px-[5px]"
+              style={{ animation: badgeBounce ? "tern-bounce 900ms ease-in-out 2" : "none" }}
+            >
               {unreadCount}
             </span>
           )}
         </button>
-        <button className="border border-[oklch(0.3_0.006_60)] bg-transparent rounded-lg px-3 py-1.5 cursor-pointer font-sans text-[13px] text-[oklch(0.85_0.004_60)] hover:bg-[oklch(0.26_0.005_60)]">
+        <button className="border border-[oklch(0.3_0.006_60)] bg-transparent rounded-lg px-3 py-1.5 cursor-pointer font-sans text-[15px] text-[oklch(0.85_0.004_60)] hover:bg-[oklch(0.26_0.005_60)]">
           Share
         </button>
       </div>

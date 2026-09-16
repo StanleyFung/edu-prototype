@@ -32,13 +32,16 @@
     <div style="display:flex; alignItems:baseline; gap:8px">
       <div style="fontSize:13.5px; lineHeight:1.35; color:oklch(0.93 0.004 60); fontWeight:500; textWrap:pretty">{{ title }}</div>
     </div>
-    <div style="fontSize:12.5px; lineHeight:1.5; color:oklch(0.66 0.006 60); textWrap:pretty">{{ detail }}</div>
+    <div style="fontSize:13px; lineHeight:1.5; color:oklch(0.78 0.005 60); textWrap:pretty">{{ detail }}</div>
     <div style="display:flex; alignItems:center; gap:10px; marginTop:4px" data-dc-tpl="6">
       <sc-if value="{{ showPrimary }}" hint-placeholder-val="{{ true }}">
         <button onClick="{{ onStart }}" style="border:none; borderRadius:6px; padding:5px 11px; fontSize:12px; fontWeight:500; fontFamily:inherit; cursor:pointer; background:oklch(0.75 0.11 175); color:oklch(0.2 0.02 175)" style-hover="background:oklch(0.8 0.11 175)">{{ action }}</button>
       </sc-if>
       <sc-if value="{{ isDone }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onView }}" onMouseEnter="{{ onHoverStart }}" onMouseLeave="{{ onHoverEnd }}" onFocus="{{ onHoverStart }}" onBlur="{{ onHoverEnd }}" style="border:none; borderRadius:6px; padding:5px 13px; fontSize:12px; fontWeight:500; fontFamily:inherit; cursor:pointer; background:oklch(0.62 0.15 250); color:oklch(0.98 0.02 250); animation:{{ fadeIn }}" style-hover="background:oklch(0.7 0.15 250)">View</button>
+      </sc-if>
+      <sc-if value="{{ showLearn }}" hint-placeholder-val="{{ true }}">
+        <a href="{{ learnUrl }}" target="_blank" rel="noopener" style="border:1px solid oklch(0.36 0.006 60); borderRadius:6px; padding:4px 11px; fontSize:12px; fontWeight:500; fontFamily:inherit; cursor:pointer; textDecoration:none; color:oklch(0.86 0.004 60); animation:{{ fadeIn }}" style-hover="background:oklch(0.3 0.005 60); color:oklch(0.97 0.004 60)">Learn more</a>
       </sc-if>
       <sc-if value="{{ showDismiss }}" hint-placeholder-val="{{ true }}">
         <button onClick="{{ onDismiss }}" style="border:none; background:none; padding:5px 4px; fontSize:13px; fontFamily:inherit; cursor:pointer; color:oklch(0.82 0.004 60); animation:{{ fadeIn }}" style-hover="color:oklch(0.97 0.004 60)">Dismiss</button>
@@ -59,11 +62,12 @@
 </div>
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:404,&quot;height&quot;:170},&quot;kind&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;skill&quot;,&quot;task&quot;,&quot;project&quot;,&quot;prompt&quot;],&quot;default&quot;:&quot;skill&quot;,&quot;tsType&quot;:&quot;'skill'|'task'|'project'|'prompt'&quot;},&quot;title&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;You've requested the same digest format in four chats&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;detail&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Saving it as a Skill means you stop restating the format every Monday.&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;action&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Create skill&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;meta&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;4 chats&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;onView&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;() =&gt; void&quot;},&quot;onComplete&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;() =&gt; void&quot;},&quot;onDismiss&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;() =&gt; void&quot;},&quot;onHoverStart&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;() =&gt; void&quot;},&quot;onHoverEnd&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;() =&gt; void&quot;}}">
+const PROJECTS_DOC = "https://support.claude.com/en/articles/9517075-what-are-projects";
 const KINDS = {
-  skill:   { bg: "oklch(0.32 0.05 175)", fg: "oklch(0.86 0.09 175)" },
-  task:    { bg: "oklch(0.33 0.05 75)",  fg: "oklch(0.88 0.1 75)" },
-  project: { bg: "oklch(0.32 0.05 280)", fg: "oklch(0.86 0.08 280)" },
-  prompt:  { bg: "oklch(0.3 0.01 60)",   fg: "oklch(0.82 0.006 60)" }
+  skill:   { bg: "oklch(0.32 0.05 175)", fg: "oklch(0.86 0.09 175)", doc: "https://support.claude.com/en/articles/12512176-what-are-skills" },
+  task:    { bg: "oklch(0.33 0.05 75)",  fg: "oklch(0.88 0.1 75)", doc: "https://code.claude.com/docs/en/scheduled-tasks" },
+  project: { bg: "oklch(0.32 0.05 280)", fg: "oklch(0.86 0.08 280)", doc: PROJECTS_DOC },
+  prompt:  { bg: "oklch(0.3 0.01 60)",   fg: "oklch(0.82 0.006 60)", doc: PROJECTS_DOC }
 };
 
 class Component extends DCLogic {
@@ -84,6 +88,8 @@ class Component extends DCLogic {
       onStart: this.props.onStart || (() => {}),
       showPrimary: p === "idle",
       showDismiss: p !== "running",
+      showLearn: p !== "running",
+      learnUrl: k.doc,
       fadeIn: p === "done" ? "tern-fade-in 320ms ease both" : "none",
       isRunning: p === "running",
       isDone: p === "done",

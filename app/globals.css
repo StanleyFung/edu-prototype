@@ -15,6 +15,7 @@
   --color-ink: oklch(0.92 0.004 60);
   --color-ink-bright: oklch(0.95 0.004 60);
   --color-muted: oklch(0.62 0.006 60);
+  --color-muted-strong: oklch(0.78 0.005 60);
   --color-faint: oklch(0.52 0.006 60);
   --color-accent: oklch(0.75 0.11 175);
   --color-accent-ink: oklch(0.2 0.02 175);
@@ -72,6 +73,30 @@ a:hover {
   }
   50% {
     opacity: 0.35;
+  }
+}
+
+@keyframes tern-bounce {
+  0% {
+    transform: translateY(0) scale(1);
+  }
+  15% {
+    transform: translateY(-9px) scale(1.23);
+  }
+  34% {
+    transform: translateY(0) scale(0.9);
+  }
+  50% {
+    transform: translateY(-4px) scale(1.1);
+  }
+  68% {
+    transform: translateY(0) scale(0.96);
+  }
+  84% {
+    transform: translateY(-1px) scale(1.02);
+  }
+  100% {
+    transform: translateY(0) scale(1);
   }
 }
 

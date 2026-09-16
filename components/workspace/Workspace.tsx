@@ -7,11 +7,14 @@ import ChatView from "./ChatView";
 import ProjectsView from "./ProjectsView";
 import ScheduledView from "./ScheduledView";
 import InsightsPanel from "./InsightsPanel";
-import Toast from "./Toast";
 import {
   BASE_TASKS,
+  DIGEST_SKILL,
+  DRAFT,
   FILTERS,
+  FOLLOW_UP,
   MESSAGES,
+  NEW_INSIGHT,
   PROJECTS,
   RECENTS,
   SKILLS,
@@ -20,7 +23,17 @@ import {
   staticInsightActions,
   staticInsightSource,
 } from "@/lib/data";
-import type { Insight, InsightActions, InsightFilter, InsightKind, InsightSource, RunState, Task } from "@/lib/types";
+import type {
+  ChatMessage,
+  Insight,
+  InsightActions,
+  InsightFilter,
+  InsightKind,
+  InsightSource,
+  RunState,
+  Skill,
+  Task,
+} from "@/lib/types";
 
 type View = "chat" | "projects" | "scheduled";
 
@@ -41,15 +54,22 @@ export default function Workspace({
   const [resolved, setResolved] = useState<string[]>([]);
   const [runs, setRuns] = useState<Record<string, RunState>>({});
   const [skillsOpen, setSkillsOpen] = useState(false);
-  const [activeSkills, setActiveSkills] = useState<string[]>(["digest"]);
+  const [activeSkills, setActiveSkills] = useState<string[]>([]);
+  const [createdSkills, setCreatedSkills] = useState<Skill[]>([]);
   const [taskOff, setTaskOff] = useState<number[]>([]);
   const [extraTasks, setExtraTasks] = useState<Task[]>([]);
-  const [showSkillRun, setShowSkillRun] = useState(false);
   const [hoverTarget, setHoverTarget] = useState<InsightKind | null>(null);
-  const [toast] = useState<string | null>(null);
+  const [draft, setDraft] = useState(DRAFT);
+  const [sent, setSent] = useState(false);
+  const [sentText, setSentText] = useState("");
+  const [replied, setReplied] = useState(false);
+  const [newInsight, setNewInsight] = useState(false);
+  const [badgeBounce, setBadgeBounce] = useState(false);
 
   const runTimeouts = useRef<ReturnType<typeof setTimeout>[]>([]);
   const hoverTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const threadRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -68,6 +88,50 @@ export default function Workspace({
       if (hoverTimeout.current) clearTimeout(hoverTimeout.current);
     };
   }, []);
+
+  function grow() {
+    const el = inputRef.current;
+    if (!el) return;
+    el.style.height = "auto";
+    el.style.height = Math.min(el.scrollHeight, 340) + "px";
+  }
+
+  useEffect(() => {
+    grow();
+    const t1 = setTimeout(grow, 60);
+    const t2 = setTimeout(grow, 400);
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+    };
+  }, []);
+
+  function scrollThread() {
+    const el = threadRef.current;
+    if (el) el.scrollTop = el.scrollHeight;
+  }
+
+  function send() {
+    const text = draft.trim();
+    if (!text || sent) return;
+    setDraft("");
+    setSent(true);
+    setSentText(text);
+    requestAnimationFrame(() => {
+      grow();
+      scrollThread();
+    });
+    setTimeout(() => {
+      setReplied(true);
+      requestAnimationFrame(() => scrollThread());
+    }, 700);
+    setTimeout(() => {
+      setNewInsight(true);
+      setInsightsOpen(false);
+      setBadgeBounce(true);
+      setTimeout(() => setBadgeBounce(false), 1900);
+    }, 1900);
+  }
 
   function setRun(id: string, val: RunState) {
     setRuns((prev) => ({ ...prev, [id]: val }));
@@ -90,6 +154,10 @@ export default function Workspace({
           setExtraTasks((prev) =>
             prev.concat([{ name: insight.title, cadence: "Mondays at 9:00am", next: "in 3 days" }])
           );
+        }
+        if (insight.kind === "skill") {
+          setCreatedSkills((prev) => prev.concat([DIGEST_SKILL]));
+          setActiveSkills((prev) => prev.concat(DIGEST_SKILL.id));
         }
         Promise.resolve(actions.accept(insight)).catch(() => {});
       }, def.steps.length * 780)
@@ -134,19 +202,21 @@ export default function Workspace({
   function toggleSkill(id: string) {
     const on = activeSkills.includes(id);
     setActiveSkills((prev) => (on ? prev.filter((x) => x !== id) : prev.concat(id)));
-    setShowSkillRun(!on);
   }
 
   function removeSkill(id: string) {
     setActiveSkills((prev) => prev.filter((x) => x !== id));
-    setShowSkillRun(false);
   }
 
   function toggleTask(idx: number) {
     setTaskOff((prev) => (prev.includes(idx) ? prev.filter((x) => x !== idx) : prev.concat(idx)));
   }
 
-  const open = useMemo(() => allInsights.filter((i) => !dismissed.includes(i.id)), [allInsights, dismissed]);
+  const insightPool = useMemo(
+    () => (newInsight ? [NEW_INSIGHT, ...allInsights] : allInsights),
+    [newInsight, allInsights]
+  );
+  const open = useMemo(() => insightPool.filter((i) => !dismissed.includes(i.id)), [insightPool, dismissed]);
   const unresolved = useMemo(() => open.filter((i) => !resolved.includes(i.id)), [open, resolved]);
   const visibleInsights = useMemo(
     () => open.filter((i) => filter === "all" || i.kind === filter),
@@ -154,6 +224,13 @@ export default function Workspace({
   );
 
   const baseTasks = useMemo(() => BASE_TASKS.concat(extraTasks), [extraTasks]);
+  const skills = useMemo(() => createdSkills.concat(SKILLS), [createdSkills]);
+  const chatMessages = useMemo<ChatMessage[]>(() => {
+    const msgs = MESSAGES.slice();
+    if (sent) msgs.push({ role: "user", text: sentText });
+    if (replied) msgs.push(FOLLOW_UP);
+    return msgs;
+  }, [sent, sentText, replied]);
 
   const hv = hoverTarget;
   const headerTitle = view === "chat" ? "Weekly digest for the platform team" : view === "projects" ? "Projects" : "Scheduled";
@@ -192,25 +269,40 @@ export default function Workspace({
           blurred={Boolean(hv)}
           insightsOpen={insightsOpen}
           unreadCount={unresolved.length}
+          badgeBounce={badgeBounce}
           onToggleInsights={() => setInsightsOpen((v) => !v)}
         />
 
         {view === "chat" && (
           <ChatView
-            messages={MESSAGES}
-            showSkillRun={showSkillRun}
+            messages={chatMessages}
             blurred={Boolean(hv)}
             composerBlurred={Boolean(hv) && hv !== "skill"}
             skillsOpen={skillsOpen}
-            skills={SKILLS}
+            skills={skills}
             activeSkills={activeSkills}
             plusHighlighted={hv === "skill"}
+            draft={draft}
+            threadRef={threadRef}
+            inputRef={inputRef}
             onOpenSkills={() => {
               setView("chat");
               setSkillsOpen((v) => !v);
             }}
+            onCloseSkills={() => setSkillsOpen(false)}
             onToggleSkill={toggleSkill}
             onRemoveSkill={removeSkill}
+            onDraftChange={(value) => {
+              setDraft(value);
+              requestAnimationFrame(grow);
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                send();
+              }
+            }}
+            onSend={send}
           />
         )}
 
@@ -245,8 +337,6 @@ export default function Workspace({
         onHoverEnd={hoverEnd}
         onDismissAll={dismissAll}
       />
-
-      <Toast message={toast} />
     </div>
   );
 }

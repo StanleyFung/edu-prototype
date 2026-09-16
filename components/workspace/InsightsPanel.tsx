@@ -52,7 +52,7 @@ export default function InsightsPanel({
             ×
           </button>
         </div>
-        <p className="m-0 text-[12.5px] leading-[1.5] text-[oklch(0.62_0.006_60)] text-pretty">
+        <p className="m-0 text-[13px] leading-[1.5] text-muted-strong text-pretty">
           Patterns spotted across your chats, with the feature that would handle them.
         </p>
         <div className="flex gap-1.5">

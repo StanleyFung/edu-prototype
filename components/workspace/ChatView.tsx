@@ -1,31 +1,44 @@
+import type { KeyboardEvent, RefObject } from "react";
 import type { ChatMessage, Skill } from "@/lib/types";
 
 interface ChatViewProps {
   messages: ChatMessage[];
-  showSkillRun: boolean;
   blurred: boolean;
   composerBlurred: boolean;
   skillsOpen: boolean;
   skills: Skill[];
   activeSkills: string[];
   plusHighlighted: boolean;
+  draft: string;
+  threadRef: RefObject<HTMLDivElement | null>;
+  inputRef: RefObject<HTMLTextAreaElement | null>;
   onOpenSkills: () => void;
+  onCloseSkills: () => void;
   onToggleSkill: (id: string) => void;
   onRemoveSkill: (id: string) => void;
+  onDraftChange: (value: string) => void;
+  onKeyDown: (e: KeyboardEvent<HTMLTextAreaElement>) => void;
+  onSend: () => void;
 }
 
 export default function ChatView({
   messages,
-  showSkillRun,
   blurred,
   composerBlurred,
   skillsOpen,
   skills,
   activeSkills,
   plusHighlighted,
+  draft,
+  threadRef,
+  inputRef,
   onOpenSkills,
+  onCloseSkills,
   onToggleSkill,
   onRemoveSkill,
+  onDraftChange,
+  onKeyDown,
+  onSend,
 }: ChatViewProps) {
   const activeSkillList = activeSkills
     .map((id) => skills.find((s) => s.id === id))
@@ -34,6 +47,7 @@ export default function ChatView({
   return (
     <>
       <div
+        ref={threadRef}
         className="flex-1 overflow-auto flex flex-col transition-[filter] duration-[260ms] ease-in-out"
         style={{ filter: blurred ? "blur(6px)" : "none" }}
       >
@@ -53,15 +67,6 @@ export default function ChatView({
               </div>
             )
           )}
-          {showSkillRun && (
-            <div className="border border-[oklch(0.3_0.04_175)] bg-[oklch(0.22_0.015_175)] rounded-[10px] px-3.5 py-3 flex items-center gap-2.5 text-[13px] text-[oklch(0.86_0.03_175)]">
-              <span
-                className="w-1.5 h-1.5 rounded-full bg-accent"
-                style={{ animation: "tern-pulse 1.4s ease-in-out infinite" }}
-              />
-              Running skill <strong className="font-semibold">Weekly Digest</strong> over 3 sources
-            </div>
-          )}
         </div>
         <div className="h-6" />
       </div>
@@ -71,6 +76,9 @@ export default function ChatView({
         style={{ filter: composerBlurred ? "blur(6px)" : "none" }}
       >
         <div className="w-full max-w-[760px] mx-auto relative">
+          {skillsOpen && (
+            <div onClick={onCloseSkills} className="fixed inset-0 z-[15]" />
+          )}
           {skillsOpen && (
             <div className="absolute bottom-[calc(100%+8px)] left-0 w-[340px] bg-popover border border-[oklch(0.31_0.006_60)] rounded-xl shadow-[0_18px_50px_oklch(0.1_0_0_/_0.55)] p-1.5 z-20">
               <div className="flex flex-col gap-px">
@@ -126,7 +134,7 @@ export default function ChatView({
           )}
 
           <div className="border border-[oklch(0.32_0.006_60)] bg-composer rounded-[14px] px-3 py-2.5 flex flex-col gap-2">
-            <div className="flex items-center gap-2.5">
+            <div className="flex items-start gap-2.5">
               <button
                 onClick={onOpenSkills}
                 className="w-[26px] h-[26px] rounded-full cursor-pointer text-[oklch(0.8_0.006_60)] text-sm leading-none font-sans transition-[background,box-shadow] duration-200 ease-in-out hover:bg-[oklch(0.28_0.005_60)]"
@@ -140,9 +148,38 @@ export default function ChatView({
               >
                 +
               </button>
-              <div className="flex-1 text-[14.5px] text-[oklch(0.55_0.006_60)]">Write a message…</div>
-              <div className="text-[12.5px] text-[oklch(0.62_0.006_60)]">
-                Sonnet 4.5 <span className="text-[9px]">▾</span>
+              <textarea
+                ref={inputRef}
+                value={draft}
+                onChange={(e) => onDraftChange(e.target.value)}
+                onKeyDown={onKeyDown}
+                rows={1}
+                placeholder="Write a message…"
+                className="flex-1 min-w-0 resize-none border-none outline-none bg-transparent font-sans text-[14.5px] leading-[1.5] text-[oklch(0.93_0.004_60)] max-h-[340px] overflow-y-auto"
+              />
+              <div className="flex items-center gap-2.5">
+                <div className="text-[12.5px] text-[oklch(0.62_0.006_60)]">
+                  Sonnet 4.5 <span className="text-[9px]">▾</span>
+                </div>
+                <button
+                  onClick={onSend}
+                  title="Send"
+                  className="w-7 h-7 flex-shrink-0 rounded-lg border-none cursor-pointer flex items-center justify-center bg-accent text-accent-ink hover:bg-[oklch(0.82_0.11_175)]"
+                >
+                  <svg
+                    width="15"
+                    height="15"
+                    viewBox="0 0 15 15"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.7"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M7.5 12.4V3.1" />
+                    <path d="M3.6 7l3.9-3.9L11.4 7" />
+                  </svg>
+                </button>
               </div>
             </div>
             {activeSkillList.length > 0 && (
@@ -165,7 +202,8 @@ export default function ChatView({
             )}
           </div>
           <div className="text-center text-[11.5px] text-[oklch(0.5_0.006_60)] mt-[9px]">
-            Prototype — responses are canned.
+            Prototype — responses are canned. Submit the message or hit Send to view the workflow insight creation
+            flow.
           </div>
         </div>
       </div>
