@@ -112,15 +112,6 @@ export const BASE_TASKS: Task[] = [
 
 export const INSIGHTS: Insight[] = [
   {
-    id: "i1",
-    kind: "skill",
-    title: "You've requested the same digest format in four chats",
-    detail:
-      "In four chats you've restated the same section order and word limit for the platform digest. A Skill saves that format and applies it whenever you ask, so Monday's digest arrives in it without you writing the spec again.",
-    action: "Create skill",
-    meta: "4 chats",
-  },
-  {
     id: "i3",
     kind: "project",
     title: "Six chats reference the same three vendor PDFs",
