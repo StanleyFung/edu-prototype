@@ -22,7 +22,7 @@
     ::selection { background: oklch(0.4 0.08 175); }
     @keyframes tern-pulse { 0%,100% { opacity: 1 } 50% { opacity: 0.35 } }
     @keyframes tern-bounce { 0% { transform: translateY(0) scale(1) } 15% { transform: translateY(-9px) scale(1.23) } 34% { transform: translateY(0) scale(0.9) } 50% { transform: translateY(-4px) scale(1.1) } 68% { transform: translateY(0) scale(0.96) } 84% { transform: translateY(-1px) scale(1.02) } 100% { transform: translateY(0) scale(1) } }
-    @keyframes tern-plus { 0%,100% { box-shadow: 0 0 0 0 oklch(0.62 0.19 250 / 0.6); outline-color: oklch(0.55 0.13 250); background-color: oklch(0.55 0.16 250) } 50% { box-shadow: 0 0 0 14px oklch(0.62 0.19 250 / 0); outline-color: oklch(0.88 0.15 250); background-color: oklch(0.74 0.15 250) } }
+    @keyframes tern-plus { 0%,100% { box-shadow: 0 0 0 0 oklch(0.62 0.19 250 / 0.6); outline-color: oklch(0.55 0.13 250); background-color: oklch(0.55 0.16 250 / 0.38) } 50% { box-shadow: 0 0 0 42px oklch(0.62 0.19 250 / 0); outline-color: oklch(0.88 0.15 250); background-color: oklch(0.7 0.15 250 / 0.5) } }
     @keyframes tern-target { 0% { box-shadow: 0 0 0 0 oklch(0.62 0.19 250 / 0.6); outline-color: oklch(0.55 0.13 250); background-color: oklch(0.42 0.12 250 / 0.75) } 50% { box-shadow: 0 0 0 14px oklch(0.62 0.19 250 / 0); outline-color: oklch(0.88 0.15 250); background-color: oklch(0.66 0.12 250 / 0.42) } 100% { box-shadow: 0 0 0 0 oklch(0.62 0.19 250 / 0.6); outline-color: oklch(0.55 0.13 250); background-color: oklch(0.42 0.12 250 / 0.75) } }
   </style>
 </helmet>
@@ -125,7 +125,7 @@
 
           <div style="border:1px solid oklch(0.32 0.006 60); background:oklch(0.215 0.005 60); borderRadius:14px; padding: 10px 12px; display:flex; flexDirection:column; gap:8px">
             <div style="display:flex; alignItems:flex-start; gap:10px">
-              <button onClick="{{ openSkills }}" style="width:26px; height:26px; borderRadius:50%; border:1px solid {{ plusBorder }}; background:{{ plusHlBg }}; outline:{{ plusRing }}; boxShadow:{{ plusGlow }}; animation:{{ plusAnim }}; transition: background 200ms ease, box-shadow 200ms ease; color:oklch(0.8 0.006 60); cursor:pointer; fontSize:14px; lineHeight:1; fontFamily:inherit" style-hover="background:oklch(0.28 0.005 60)">+</button>
+              <button onClick="{{ openSkills }}" style="width:26px; height:26px; borderRadius:50%; border:1px solid {{ plusBorder }}; background:{{ plusHlBg }}; outline:{{ plusRing }}; boxShadow:{{ plusGlow }}; animation:{{ plusAnim }}; transition: background 200ms ease, box-shadow 200ms ease, color 200ms ease; color:{{ plusColor }}; cursor:pointer; fontSize:14px; lineHeight:1; fontFamily:inherit" style-hover="background:oklch(0.28 0.005 60)">+</button>
               <textarea ref="{{ inputRef }}" value="{{ draft }}" onChange="{{ onDraft }}" onKeyDown="{{ onKeyDown }}" rows="1" placeholder="Write a message…" style="flex:1; minWidth:0; resize:none; border:none; outline:none; background:transparent; fontFamily:inherit; fontSize:14.5px; lineHeight:1.5; color:oklch(0.93 0.004 60); maxHeight:340px; overflowY:auto"></textarea>
               <div style="display:flex; alignItems:center; gap:10px">
                 <div style="fontSize:12.5px; color:oklch(0.62 0.006 60)">Sonnet 4.5 <span style="fontSize:9px">▾</span></div>
@@ -142,7 +142,7 @@
               </div>
             </sc-if>
           </div>
-          <div style="textAlign:center; fontSize:12px; color:oklch(70.305% 0.23703 142.673); marginTop:9px">Prototype — responses are canned. Submit the message or hit Send to view the workflow insight creation flow.</div>
+          <div style="textAlign:center; fontSize:12px; color:oklch(0.8 0.006 60); marginTop:9px">Prototype — responses are canned. Submit the message or hit Send to view the workflow insight creation flow.</div>
         </div>
       </div>
     </sc-if>
@@ -150,17 +150,119 @@
     <sc-if value="{{ isProjects }}" hint-placeholder-val="{{ false }}">
       <div style="flex:1; overflow:auto; padding: 36px 32px">
         <div style="maxWidth:900px; margin: 0 auto; transition: filter 260ms ease; filter:{{ fxMain }}">
-          <h1 style="fontFamily: Newsreader, Georgia, serif; fontWeight:400; fontSize:30px; margin: 0 0 6px; color:oklch(0.95 0.004 60)">Projects</h1>
-          <p style="margin: 0 0 26px; fontSize:13.5px; color:oklch(0.62 0.006 60)">Keep chats, files, and instructions together.</p>
+          <div style="display:flex; alignItems:flex-start; gap:16px">
+            <div style="minWidth:0">
+              <h1 style="fontFamily: Newsreader, Georgia, serif; fontWeight:400; fontSize:30px; margin: 0 0 6px; color:oklch(0.95 0.004 60)">Projects</h1>
+              <p style="margin: 0 0 26px; fontSize:13.5px; color:oklch(0.62 0.006 60)">Keep chats, files, and instructions together.</p>
+            </div>
+            <div style="marginLeft:auto; display:flex; alignItems:center; gap:8px; paddingTop:6px">
+              <button onClick="{{ noSubmit }}" title="Search projects" style="width:30px; height:30px; borderRadius:8px; border:none; background:none; cursor:pointer; color:oklch(0.78 0.006 60); display:flex; alignItems:center; justifyContent:center" style-hover="background:oklch(0.26 0.005 60)"><svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.3"><circle cx="6.6" cy="6.6" r="4.3"></circle><path d="M9.8 9.8l3 3"></path></svg></button>
+              <button onClick="{{ noSubmit }}" title="Sort" style="width:30px; height:30px; borderRadius:8px; border:none; background:none; cursor:pointer; color:oklch(0.78 0.006 60); display:flex; alignItems:center; justifyContent:center" style-hover="background:oklch(0.26 0.005 60)"><svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M4.3 12.2V3.4M4.3 3.4L2.2 5.6M4.3 3.4l2.1 2.2"></path><path d="M10.7 2.8v8.8M10.7 11.6l2.1-2.2M10.7 11.6l-2.1-2.2"></path></svg></button>
+              <button onClick="{{ newProject }}" style="border:none; background:oklch(0.96 0.003 60); borderRadius:9px; padding:8px 15px; cursor:pointer; fontFamily:inherit; fontSize:13.5px; fontWeight:500; color:oklch(0.2 0.005 60); whiteSpace:nowrap" style-hover="background:oklch(1 0 0)">New project</button>
+            </div>
+          </div>
           <div style="display:grid; gridTemplateColumns: repeat(auto-fill, minmax(240px, 1fr)); gap:14px">
             <sc-for list="{{ projectCards }}" as="p" hint-placeholder-count="4">
-              <div style="border:1px solid oklch(0.27 0.005 60); background:oklch(0.21 0.005 60); borderRadius:12px; padding:16px; display:flex; flexDirection:column; gap:8px; minHeight:132px" style-hover="borderColor:oklch(0.38 0.006 60)">
+              <div onClick="{{ p.open }}" style="border:1px solid oklch(0.27 0.005 60); background:oklch(0.21 0.005 60); borderRadius:12px; padding:16px; display:flex; flexDirection:column; gap:8px; minHeight:132px; cursor:pointer; transition: background 400ms ease, border-color 400ms ease" style-hover="borderColor:oklch(0.38 0.006 60)">
                 <span style="width:8px; height:8px; borderRadius:3px; background:{{ p.dot }}"></span>
                 <div style="fontSize:14.5px; color:oklch(0.94 0.004 60); fontWeight:500; textWrap:pretty">{{ p.name }}</div>
                 <div style="fontSize:12.5px; lineHeight:1.5; color:oklch(0.62 0.006 60); textWrap:pretty">{{ p.desc }}</div>
                 <div style="marginTop:auto; fontSize:11.5px; color:oklch(0.5 0.006 60); fontFamily: ui-monospace, Menlo, monospace">{{ p.meta }}</div>
               </div>
             </sc-for>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isProject }}" hint-placeholder-val="{{ false }}">
+      <div style="flex:1; overflow:auto; padding: 26px 30px 40px; transition: filter 260ms ease; filter:{{ fxMain }}">
+        <div style="maxWidth:1080px; margin:0 auto; display:flex; flexDirection:column; gap:18px">
+          <button onClick="{{ goProjects }}" style="alignSelf:flex-start; border:none; background:none; padding:0; cursor:pointer; fontFamily:inherit; fontSize:12.5px; color:oklch(0.62 0.006 60)" style-hover="color:oklch(0.9 0.004 60)">← All projects</button>
+
+          <div style="display:flex; alignItems:center; gap:12px">
+            <span style="width:9px; height:9px; borderRadius:3px; flexShrink:0; background:{{ projDot }}"></span>
+            <h1 style="fontFamily: Newsreader, Georgia, serif; fontWeight:400; fontSize:28px; margin:0; color:oklch(0.96 0.004 60); textWrap:pretty">{{ projName }}</h1>
+            <div style="marginLeft:auto; display:flex; alignItems:center; gap:4px">
+              <button style="width:28px; height:28px; borderRadius:7px; border:none; background:none; cursor:pointer; color:oklch(0.72 0.006 60); display:flex; alignItems:center; justifyContent:center" style-hover="background:oklch(0.26 0.005 60)"><svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M6 2.2h3l.5 4.1 2.1 2.1H3.4l2.1-2.1z"></path><path d="M7.5 8.4v4.4"></path></svg></button>
+              <button style="width:28px; height:28px; borderRadius:7px; border:none; background:none; cursor:pointer; color:oklch(0.72 0.006 60); fontSize:15px; lineHeight:1; fontFamily:inherit" style-hover="background:oklch(0.26 0.005 60)">⋯</button>
+            </div>
+          </div>
+
+          <div style="display:grid; gridTemplateColumns: minmax(0, 1fr) 356px; gap:22px; alignItems:start">
+            <div style="display:flex; flexDirection:column; gap:44px; minWidth:0">
+              <div style="border:1px solid oklch(0.32 0.006 60); background:oklch(0.215 0.005 60); borderRadius:14px; padding:11px 13px; display:flex; flexDirection:column; gap:11px">
+                <textarea value="{{ projDraft }}" onChange="{{ onProjDraft }}" rows="2" placeholder="Type / for skills" style="border:none; outline:none; resize:none; background:transparent; fontFamily:inherit; fontSize:14.5px; lineHeight:1.5; color:oklch(0.93 0.004 60)"></textarea>
+                <div style="display:flex; alignItems:center; gap:10px">
+                  <button onClick="{{ noSubmit }}" style="width:26px; height:26px; borderRadius:50%; border:1px solid oklch(0.35 0.006 60); background:none; cursor:pointer; color:oklch(0.8 0.006 60); fontSize:14px; lineHeight:1; fontFamily:inherit" style-hover="background:oklch(0.28 0.005 60)">+</button>
+                  <div style="display:flex; gap:2px; background:oklch(0.24 0.005 60); borderRadius:8px; padding:2px">
+                    <span style="padding:3px 10px; borderRadius:6px; fontSize:12.5px; background:oklch(0.3 0.005 60); color:oklch(0.93 0.004 60)">Chat</span>
+                    <span style="padding:3px 10px; borderRadius:6px; fontSize:12.5px; color:oklch(0.58 0.006 60)">Cowork</span>
+                  </div>
+                  <div style="marginLeft:auto; fontSize:12.5px; color:oklch(0.62 0.006 60)">Sonnet 4.5 <span style="fontSize:9px">▾</span></div>
+                </div>
+              </div>
+
+              <div style="display:flex; flexDirection:column; alignItems:center; gap:12px; padding: 0 20px">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="oklch(0.55 0.006 60)" stroke-width="1.2"><path d="M3 5.5A2.5 2.5 0 0 1 5.5 3h9A2.5 2.5 0 0 1 17 5.5v5A2.5 2.5 0 0 1 14.5 13H8l-4 3.4V13"></path><path d="M7 8h6"></path></svg>
+                <div style="fontSize:13.5px; lineHeight:1.6; color:oklch(0.62 0.006 60); textAlign:center; maxWidth:420px; textWrap:pretty">Claude references the same instructions and files every time you talk to it in this project.</div>
+              </div>
+            </div>
+
+            <div style="border:1px solid oklch(0.27 0.005 60); background:oklch(0.205 0.005 60); borderRadius:14px; overflow:hidden">
+              <div style="padding:16px 18px 15px; borderBottom:1px solid oklch(0.25 0.005 60); outline:{{ instrRing }}; background:{{ instrBg }}; transition: background 400ms ease">
+                <div style="display:flex; alignItems:center; gap:10px; marginBottom:8px">
+                  <div style="fontSize:14.5px; color:oklch(0.94 0.004 60)">Instructions</div>
+                </div>
+                <div onClick="{{ openInstrModal }}" title="Edit instructions" style="height:128px; border:1px solid {{ instrBoxBorder }}; borderRadius:10px; background:{{ instrBoxBg }}; transition: background 400ms ease, border-color 400ms ease; padding:12px 14px; cursor:pointer; overflow:hidden; whiteSpace:pre-wrap; wordBreak:break-word; fontSize:12.5px; lineHeight:1.65; color:{{ instrColor }}" style-hover="borderColor:oklch(0.42 0.006 60); background:oklch(0.24 0.005 60)">{{ instrDisplay }}</div>
+              </div>
+
+              <div style="padding:16px 18px 15px; borderBottom:1px solid oklch(0.25 0.005 60)">
+                <div style="display:flex; alignItems:center; gap:10px; marginBottom:8px">
+                  <div style="fontSize:14.5px; color:oklch(0.94 0.004 60)">Memory</div>
+                  <span style="marginLeft:auto; display:flex; alignItems:center; gap:5px; border:1px solid oklch(0.3 0.006 60); borderRadius:7px; padding:3px 8px; fontSize:11.5px; color:oklch(0.7 0.006 60)"><svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.1"><rect x="1.6" y="4.4" width="6.8" height="4.4" rx="1"></rect><path d="M3.3 4.4V3.2a1.7 1.7 0 0 1 3.4 0v1.2"></path></svg>Only you</span>
+                </div>
+                <div style="fontSize:12.5px; color:oklch(0.6 0.006 60)">Project memory will show here after a few chats.</div>
+              </div>
+
+              <div style="padding:16px 18px 15px; borderBottom:1px solid oklch(0.25 0.005 60); outline:{{ ctxRing }}; background:{{ ctxBg }}; transition: background 400ms ease">
+                <div style="display:flex; alignItems:center; gap:10px; marginBottom:10px">
+                  <div style="fontSize:14.5px; color:oklch(0.94 0.004 60)">Context</div>
+                  <sc-if value="{{ hasContext }}" hint-placeholder-val="{{ false }}">
+                    <div style="fontSize:11.5px; color:oklch(0.55 0.006 60); fontFamily: ui-monospace, Menlo, monospace">{{ ctxCount }}</div>
+                  </sc-if>
+                  <button onClick="{{ noSubmit }}" style="marginLeft:auto; border:none; background:none; cursor:pointer; color:oklch(0.7 0.006 60); fontSize:16px; lineHeight:1; fontFamily:inherit; padding:0 2px" style-hover="color:oklch(0.95 0.004 60)">+</button>
+                </div>
+                <sc-if value="{{ hasContext }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:flex; flexDirection:column; gap:6px">
+                    <sc-for list="{{ contextFiles }}" as="f" hint-placeholder-count="3">
+                      <div style="display:flex; alignItems:center; gap:10px; border:1px solid oklch(0.27 0.005 60); background:oklch(0.225 0.005 60); borderRadius:9px; padding:9px 10px">
+                        <span style="width:22px; height:26px; flexShrink:0; borderRadius:3px; background:oklch(0.33 0.05 25); color:oklch(0.9 0.04 25); fontSize:8px; fontWeight:600; letterSpacing:0.02em; display:flex; alignItems:center; justifyContent:center">PDF</span>
+                        <span style="display:flex; flexDirection:column; gap:2px; minWidth:0">
+                          <span style="fontSize:12.5px; color:oklch(0.92 0.004 60); whiteSpace:nowrap; overflow:hidden; textOverflow:ellipsis">{{ f.name }}</span>
+                          <span style="fontSize:11px; color:oklch(0.58 0.006 60)">{{ f.meta }}</span>
+                        </span>
+                        <button onClick="{{ noSubmit }}" style="marginLeft:auto; flexShrink:0; border:none; background:none; cursor:pointer; color:oklch(0.55 0.006 60); fontSize:13px; lineHeight:1; fontFamily:inherit" style-hover="color:oklch(0.9 0.004 60)">×</button>
+                      </div>
+                    </sc-for>
+                  </div>
+                </sc-if>
+                <sc-if value="{{ noContext }}" hint-placeholder-val="{{ true }}">
+                  <div style="border:1px dashed oklch(0.3 0.006 60); borderRadius:10px; background:oklch(0.195 0.005 60); padding: 30px 22px; display:flex; flexDirection:column; alignItems:center; gap:12px">
+                    <svg width="40" height="26" viewBox="0 0 40 26" fill="none" stroke="oklch(0.5 0.006 60)" stroke-width="1.1"><rect x="1" y="8" width="12" height="15" rx="1.5"></rect><rect x="14" y="6" width="12" height="17" rx="1.5"></rect><rect x="27" y="3" width="12" height="20" rx="1.5"></rect></svg>
+                    <div style="fontSize:12.5px; lineHeight:1.55; color:oklch(0.62 0.006 60); textAlign:center; textWrap:pretty">Add PDFs, documents, or other text to reference in this project.</div>
+                  </div>
+                </sc-if>
+              </div>
+
+              <div style="padding:16px 18px 16px">
+                <div style="display:flex; alignItems:center; gap:10px; marginBottom:8px">
+                  <div style="fontSize:14.5px; color:oklch(0.94 0.004 60)">Scheduled</div>
+                  <button onClick="{{ noSubmit }}" style="marginLeft:auto; border:none; background:none; cursor:pointer; color:oklch(0.7 0.006 60); fontSize:16px; lineHeight:1; fontFamily:inherit; padding:0 2px" style-hover="color:oklch(0.95 0.004 60)">+</button>
+                </div>
+                <div style="fontSize:12.5px; color:oklch(0.6 0.006 60)">Set up recurring tasks for this project.</div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -202,7 +304,7 @@
         <div style="fontSize:11.5px; color:oklch(0.55 0.006 60); fontFamily: ui-monospace, Menlo, monospace">{{ openCount }} open</div>
         <button onClick="{{ closeInsights }}" style="marginLeft:auto; border:none; background:none; cursor:pointer; color:oklch(0.62 0.006 60); fontSize:17px; lineHeight:1; fontFamily:inherit; padding:2px 4px" style-hover="color:oklch(0.92 0.004 60)">×</button>
       </div>
-      <p style="margin:0; fontSize:13px; lineHeight:1.5; color:oklch(0.78 0.005 60); textWrap:pretty">Patterns spotted across your chats, with the feature that would handle them.</p>
+      <p style="margin:0; fontSize:13px; lineHeight:1.5; color:oklch(0.78 0.005 60); textWrap:pretty">{{ panelBlurb }}</p>
       <div style="display:flex; gap:6px">
         <sc-for list="{{ filters }}" as="f" hint-placeholder-count="5">
           <button onClick="{{ f.pick }}" style="border:1px solid {{ f.border }}; background:{{ f.bg }}; color:{{ f.fg }}; borderRadius:20px; padding:4px 11px; fontSize:12px; fontFamily:inherit; cursor:pointer">{{ f.label }}</button>
@@ -229,6 +331,24 @@
     </div>
   </div>
 
+  <sc-if value="{{ instrModal }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed; inset:0; zIndex:70; background:oklch(0.12 0 0 / 0.58); display:flex; alignItems:center; justifyContent:center; padding:28px">
+      <div onClick="{{ closeInstrModal }}" style="position:absolute; inset:0"></div>
+      <div style="position:relative; width:560px; maxWidth:100%; background:oklch(0.225 0.005 60); border:1px solid oklch(0.33 0.006 60); borderRadius:14px; boxShadow: 0 28px 70px oklch(0.1 0 0 / 0.55); padding:20px; display:flex; flexDirection:column; gap:14px">
+        <div style="display:flex; alignItems:center; gap:10px">
+          <div style="fontFamily: Newsreader, Georgia, serif; fontSize:19px; color:oklch(0.96 0.004 60)">Instructions</div>
+          <button onClick="{{ closeInstrModal }}" style="marginLeft:auto; border:none; background:none; cursor:pointer; color:oklch(0.62 0.006 60); fontSize:17px; lineHeight:1; fontFamily:inherit; padding:2px 4px" style-hover="color:oklch(0.92 0.004 60)">×</button>
+        </div>
+        <p style="margin:0; fontSize:12.5px; lineHeight:1.5; color:oklch(0.68 0.006 60); textWrap:pretty">Claude follows these in every chat in this project.</p>
+        <textarea value="{{ instrDraft }}" onChange="{{ onInstrDraft }}" placeholder="Add instructions for Claude's responses" style="width:100%; height:300px; border:1px solid oklch(0.3 0.006 60); borderRadius:10px; background:oklch(0.205 0.005 60); padding:12px 13px; resize:none; outline:none; fontFamily:inherit; fontSize:13px; lineHeight:1.65; color:oklch(0.9 0.004 60)" style-focus="borderColor:oklch(0.5 0.06 175)"></textarea>
+        <div style="display:flex; alignItems:center; gap:8px; justifyContent:flex-end">
+          <button onClick="{{ closeInstrModal }}" style="border:1px solid oklch(0.32 0.006 60); background:none; borderRadius:8px; padding:7px 14px; cursor:pointer; fontFamily:inherit; fontSize:13px; color:oklch(0.85 0.004 60)" style-hover="background:oklch(0.27 0.005 60)">Cancel</button>
+          <button onClick="{{ saveInstr }}" style="border:none; background:oklch(0.75 0.11 175); borderRadius:8px; padding:7px 16px; cursor:pointer; fontFamily:inherit; fontSize:13px; fontWeight:500; color:oklch(0.2 0.02 175)" style-hover="background:oklch(0.82 0.11 175)">Save</button>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
   <sc-if value="{{ toast }}" hint-placeholder-val="{{ false }}">
     <div style="position:fixed; bottom:24px; left:50%; transform: translateX(-50%); zIndex:60; background:oklch(0.26 0.005 60); border:1px solid oklch(0.36 0.006 60); borderRadius:10px; padding: 10px 16px; fontSize:13px; color:oklch(0.94 0.004 60); boxShadow: 0 14px 40px oklch(0.1 0 0 / 0.5)">{{ toast }}</div>
   </sc-if>
@@ -236,11 +356,20 @@
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props="{&quot;insightsInitiallyOpen&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Prototype state&quot;},&quot;initialView&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;chat&quot;,&quot;projects&quot;,&quot;scheduled&quot;],&quot;default&quot;:&quot;chat&quot;,&quot;tsType&quot;:&quot;'chat'|'projects'|'scheduled'&quot;,&quot;section&quot;:&quot;Prototype state&quot;}}">
 const PROJECTS = [
-  { name: "Education Prototype Brainstorming", dot: "oklch(0.7 0.1 280)", desc: "Concepts and research for the K-12 pilot.", meta: "12 chats · 4 files" },
-  { name: "Q3 Reporting", dot: "oklch(0.75 0.11 175)", desc: "Weekly digests, metrics pulls, exec summaries.", meta: "8 chats · 11 files" },
-  { name: "Support Triage", dot: "oklch(0.78 0.12 75)", desc: "Ticket clustering and response drafting.", meta: "23 chats · 2 files" },
-  { name: "Hiring Loop", dot: "oklch(0.68 0.06 60)", desc: "Rubrics, debrief notes, scorecard drafts.", meta: "5 chats" }
+  { id: "edu", name: "Education Prototype Brainstorming", dot: "oklch(0.7 0.1 280)", desc: "Concepts and research for the K-12 pilot.", meta: "12 chats · 4 files" },
+  { id: "q3", name: "Q3 Reporting", dot: "oklch(0.75 0.11 175)", desc: "Weekly digests, metrics pulls, exec summaries.", meta: "8 chats · 11 files" },
+  { id: "triage", name: "Support Triage", dot: "oklch(0.78 0.12 75)", desc: "Ticket clustering and response drafting.", meta: "23 chats · 2 files" }
 ];
+
+const VENDOR_PROJECT = { id: "vendor", name: "Vendor Security Review", dot: "oklch(0.72 0.1 30)", desc: "SOC 2 reports and questionnaire answers for the three shortlisted vendors.", meta: "6 chats · 3 files" };
+
+const VENDOR_FILES = [
+  { name: "Northwind-SOC2-TypeII-2026.pdf", meta: "84 pages · added just now" },
+  { name: "Cloudmark-SOC2-BridgeLetter.pdf", meta: "6 pages · added just now" },
+  { name: "Orbital-Security-Questionnaire.pdf", meta: "22 pages · added just now" }
+];
+
+const TRIAGE_INSTRUCTIONS = "Tone: short and direct. No hedging.\n\n• Lead with the answer in the first sentence, then at most two sentences of reasoning.\n• Cut qualifiers — \"it depends\", \"you may want to\", \"generally speaking\", \"I think\". If something is genuinely uncertain, say so once in plain words and move on.\n• Prefer plain verbs over softeners: \"do X\" instead of \"you might consider doing X\".\n• No preamble, no summary of the question back to me, no closing offer to help further.\n• Use the customer's wording for their problem rather than internal shorthand.\n• Bullets over paragraphs whenever there is more than one item.";
 
 const RECENTS = [
   "Weekly digest for the platform team",
@@ -271,11 +400,9 @@ const MESSAGES = [
 ];
 
 const INSIGHTS = [
-  { id: "i1", kind: "skill", title: "You've requested the same digest format in four chats", detail: "Saving it as a Skill means you stop restating the format every Monday.", action: "Create skill", meta: "4 chats" },
   { id: "i2", kind: "task", title: "\"Do the same thing next Monday\" looks like a recurring job", detail: "A Scheduled Task can run the digest weekly and post the result here.", action: "Schedule it", meta: "this chat" },
-  { id: "i3", kind: "project", title: "Six chats reference the same three vendor PDFs", detail: "A Project would hold the files once instead of re-uploading them per chat.", action: "Create project", meta: "6 chats" },
+  { id: "i3", kind: "project", title: "Six chats reference the same three vendor PDFs", detail: "Northwind's SOC 2 Type II, Cloudmark's bridge letter, and Orbital's security questionnaire — you re-upload all three every time you compare the shortlist. A Project would hold them once.", action: "Create project", meta: "6 chats" },
   { id: "i4", kind: "prompt", title: "You correct tone the same way most sessions", detail: "\"Shorter, no hedging\" appears in 9 of the last 14 chats in your Support Triage project. Put it in that project's Instructions.", action: "Add to Instructions", meta: "9 of 14" },
-  { id: "i5", kind: "skill", title: "Your triage replies follow a consistent four-part shape", detail: "Turning it into a Skill would keep the structure stable across teammates.", action: "Create skill", meta: "11 chats" },
   { id: "i6", kind: "task", title: "You check the deploy changelog every morning", detail: "A 8:30am task could summarize overnight changes before you ask.", action: "Schedule it", meta: "13 days" }
 ];
 
@@ -291,12 +418,38 @@ const HL = "oklch(0.58 0.11 250 / 0.5)";
 const RING = "2px solid oklch(0.72 0.12 250)";
 const PULSE = "tern-target 1.9s ease-in-out infinite";
 
+const FILTER_BLURBS = {
+  all: "Patterns spotted across your chats, with the feature that would handle them.",
+  skill: "Skills save a way of working — a format, a structure, a set of rules — so Claude applies it on demand instead of you restating it each time.",
+  task: "Scheduled Tasks run a prompt on a cadence you set and post the result back in chat, without you starting the conversation.",
+  project: "Projects keep related chats, files, and instructions in one place, so Claude has the same context every time you work there."
+};
+
 const FILTERS = [
   { id: "all", label: "All" },
   { id: "skill", label: "Skills" },
   { id: "task", label: "Tasks" },
   { id: "project", label: "Projects" },
 ];
+
+function clampText(text, maxLines, perLine) {
+  const out = [];
+  let used = 0;
+  for (const raw of text.split("\n")) {
+    const words = raw.length ? raw.split(" ") : [""];
+    let line = "";
+    for (const w of words) {
+      const cand = line ? line + " " + w : w;
+      if (cand.length > perLine && line) { out.push(line); used++; line = w; if (used >= maxLines) break; }
+      else line = cand;
+    }
+    if (used >= maxLines) break;
+    out.push(line); used++;
+    if (used >= maxLines) break;
+  }
+  const flat = out.join("\n");
+  return flat.length < text.length ? flat.replace(/[\s·•-]+$/, "") + "…" : flat;
+}
 
 class Component extends DCLogic {
   state = {
@@ -316,8 +469,22 @@ class Component extends DCLogic {
     hoverTarget: null,
     draft: DRAFT,
     sent: false,
-    newInsight: false
+    newInsight: false,
+    openProject: null,
+    instrEdits: {},
+    instrModal: false,
+    instrDraft: "",
+    projDraft: "",
+    instructionsAdded: false,
+    projectCreated: false,
+    flashSection: null
   };
+
+  flashSection(which) {
+    clearTimeout(this._fsT);
+    this.setState({ flashSection: which });
+    this._fsT = setTimeout(() => this.setState({ flashSection: null }), 2600);
+  }
 
   flash(msg) {
     clearTimeout(this._t);
@@ -377,6 +544,8 @@ class Component extends DCLogic {
       const next = { resolved: this.state.resolved.concat(ins.id) };
       if (ins.kind === "skill") { next.createdSkills = this.state.createdSkills.concat([DIGEST_SKILL]); next.activeSkills = this.state.activeSkills.concat(DIGEST_SKILL.id); }
       if (ins.kind === "task") next.extraTasks = this.state.extraTasks.concat([{ name: ins.title, cadence: "Mondays at 9:00am", next: "in 3 days" }]);
+      if (ins.kind === "project") next.projectCreated = true;
+      if (ins.kind === "prompt") next.instructionsAdded = true;
       this.setState(next);
     }, def.steps.length * 780));
   }
@@ -386,9 +555,12 @@ class Component extends DCLogic {
   }
 
   view(ins) {
-    const go = { task: "scheduled", project: "projects", prompt: "projects", skill: "chat" }[ins.kind] || "chat";
+    const go = { task: "scheduled", project: "project", prompt: "project", skill: "chat" }[ins.kind] || "chat";
     clearTimeout(this._hoverT);
-    this.setState({ view: go, insightsOpen: false, hoverTarget: null, skillsOpen: ins.kind === "skill", dismissed: this.state.dismissed.concat(ins.id) });
+    const next = { view: go, insightsOpen: false, hoverTarget: null, skillsOpen: ins.kind === "skill", dismissed: this.state.dismissed.concat(ins.id) };
+    if (ins.kind === "project") { next.openProject = "vendor"; this.flashSection("context"); }
+    if (ins.kind === "prompt") { next.openProject = "triage"; this.flashSection("instructions"); }
+    this.setState(next);
   }
 
   renderVals() {
@@ -401,6 +573,12 @@ class Component extends DCLogic {
     const hl = "oklch(0.26 0.005 60)";
     const hv = s.hoverTarget;
 
+    const allProjects = (s.projectCreated ? [VENDOR_PROJECT] : []).concat(PROJECTS);
+    const cur = allProjects.find(p => p.id === s.openProject) || null;
+    const baseInstr = cur && cur.id === "triage" && s.instructionsAdded ? TRIAGE_INSTRUCTIONS : "";
+    const instrText = cur && s.instrEdits[cur.id] !== undefined ? s.instrEdits[cur.id] : baseInstr;
+    const ctxFiles = cur && cur.id === "vendor" ? VENDOR_FILES : [];
+
     const baseTasks = [
       { name: "Platform weekly digest", cadence: "Mondays at 9:00am", next: "in 3 days" },
       { name: "Overnight deploy changelog", cadence: "Weekdays at 8:30am", next: "tomorrow" },
@@ -408,13 +586,40 @@ class Component extends DCLogic {
     ].concat(s.extraTasks);
 
     return {
-      headerTitle: view === "chat" ? "Weekly digest for the platform team" : view === "projects" ? "Projects" : "Scheduled",
+      headerTitle: view === "chat" ? "Weekly digest for the platform team" : view === "projects" ? "Projects" : view === "project" ? (cur ? cur.name : "Project") : "Scheduled",
       isChat: view === "chat",
       isProjects: view === "projects",
+      isProject: view === "project" && !!cur,
       isScheduled: view === "scheduled",
       tabChatBg: view === "chat" ? "oklch(0.3 0.005 60)" : "transparent",
       tabProjBg: view !== "chat" ? "oklch(0.3 0.005 60)" : "transparent",
-      navProjBg: hv === "project" || hv === "prompt" ? HL : view === "projects" ? hl : "transparent",
+      navProjBg: hv === "project" || hv === "prompt" ? HL : (view === "projects" || view === "project") ? hl : "transparent",
+
+      projName: cur ? cur.name : "",
+      projDot: cur ? cur.dot : "transparent",
+      projDraft: s.projDraft,
+      onProjDraft: e => this.setState({ projDraft: e.target.value }),
+      noSubmit: () => this.flash("Prototype — this control isn't wired up"),
+      newProject: () => this.flash("Prototype — project creation isn't wired up"),
+      instrDisplay: instrText.length ? clampText(instrText, 5, 44) : "Add instructions for Claude's responses",
+      instrColor: instrText.length ? "oklch(0.88 0.004 60)" : "oklch(0.6 0.006 60)",
+      instrModal: s.instrModal,
+      instrDraft: s.instrDraft,
+      onInstrDraft: e => this.setState({ instrDraft: e.target.value }),
+      openInstrModal: () => this.setState({ instrModal: true, instrDraft: instrText }),
+      closeInstrModal: () => this.setState({ instrModal: false }),
+      saveInstr: () => this.setState({ instrModal: false, instrEdits: Object.assign({}, s.instrEdits, { [cur.id]: s.instrDraft }) }),
+      onInstr: e => this.setState({ instrEdits: Object.assign({}, s.instrEdits, { [cur.id]: e.target.value }) }),
+      instrBoxBorder: s.flashSection === "instructions" ? "oklch(0.6 0.09 175)" : "oklch(0.28 0.006 60)",
+      instrBoxBg: s.flashSection === "instructions" ? "oklch(0.27 0.03 175)" : "oklch(0.225 0.005 60)",
+      instrRing: s.flashSection === "instructions" ? "2px solid oklch(0.6 0.09 175)" : "none",
+      instrBg: s.flashSection === "instructions" ? "oklch(0.24 0.02 175)" : "transparent",
+      ctxRing: s.flashSection === "context" ? "2px solid oklch(0.6 0.09 175)" : "none",
+      ctxBg: s.flashSection === "context" ? "oklch(0.24 0.02 175)" : "transparent",
+      contextFiles: ctxFiles,
+      hasContext: ctxFiles.length > 0,
+      noContext: ctxFiles.length === 0,
+      ctxCount: ctxFiles.length + " files",
       navSchedBg: hv === "task" ? HL : view === "scheduled" ? hl : "transparent",
       goChat: () => this.setState({ view: "chat" }),
       goProjects: () => this.setState({ view: "projects", skillsOpen: false }),
@@ -456,8 +661,11 @@ class Component extends DCLogic {
         remove: () => this.setState({ activeSkills: s.activeSkills.filter(x => x !== id), showSkillRun: false })
       })),
 
-      projects: PROJECTS.slice(0, 3).map(p => ({ name: p.name, dot: p.dot, open: () => this.setState({ view: "projects" }) })),
-      projectCards: PROJECTS,
+      projects: allProjects.map(p => ({ name: p.name, dot: p.dot, open: () => this.setState({ view: "project", openProject: p.id, skillsOpen: false }) })),
+      projectCards: allProjects.map(p => ({
+        name: p.name, dot: p.dot, desc: p.desc, meta: p.meta,
+        open: () => this.setState({ view: "project", openProject: p.id, skillsOpen: false })
+      })),
       recents: RECENTS.map(t => ({ title: t, open: () => this.setState({ view: "chat" }) })),
 
       tasks: baseTasks.map((t, idx) => {
@@ -487,11 +695,12 @@ class Component extends DCLogic {
       userHlBg: "transparent",
       plusRing: hv === "skill" ? RING : "none",
       plusBorder: hv === "skill" ? "oklch(0.72 0.12 250)" : "oklch(0.35 0.006 60)",
-      plusGlow: hv === "skill" ? "0 0 0 6px oklch(0.62 0.19 250 / 0.28)" : "none",
+      plusGlow: hv === "skill" ? "0 0 0 18px oklch(0.62 0.19 250 / 0.28)" : "none",
       plusAnim: hv === "skill" ? "tern-plus 1.9s ease-in-out infinite" : "none",
       navProjAnim: hv === "project" || hv === "prompt" ? PULSE : "none",
       navSchedAnim: hv === "task" ? PULSE : "none",
-      plusHlBg: hv === "skill" ? "oklch(0.62 0.16 250)" : "transparent",
+      plusHlBg: hv === "skill" ? "oklch(0.62 0.16 250 / 0.42)" : "transparent",
+      plusColor: hv === "skill" ? "oklch(0.995 0 0)" : "oklch(0.8 0.006 60)",
       insightsOpen: s.insightsOpen,
       inboxBg: s.insightsOpen ? "oklch(0.3 0.03 175)" : "oklch(0.23 0.005 60)",
       panelTransform: s.insightsOpen ? "translateX(0)" : "translateX(104%)",
@@ -501,6 +710,7 @@ class Component extends DCLogic {
       unreadCount: unresolved.length,
       hasUnread: unresolved.length > 0,
       openCount: unresolved.length,
+      panelBlurb: FILTER_BLURBS[s.filter] || FILTER_BLURBS.all,
       filters: FILTERS.map(f => {
         const on = s.filter === f.id;
         return {
