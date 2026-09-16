@@ -105,12 +105,12 @@ a:hover {
   100% {
     box-shadow: 0 0 0 0 oklch(0.62 0.19 250 / 0.6);
     outline-color: oklch(0.55 0.13 250);
-    background-color: oklch(0.55 0.16 250 / 0.38);
+    background-color: oklch(0.55 0.16 250 / 0.2);
   }
   50% {
-    box-shadow: 0 0 0 42px oklch(0.62 0.19 250 / 0);
+    box-shadow: 0 0 0 84px oklch(0.62 0.19 250 / 0);
     outline-color: oklch(0.88 0.15 250);
-    background-color: oklch(0.7 0.15 250 / 0.5);
+    background-color: oklch(0.92 0.04 250 / 0.35);
   }
 }
 

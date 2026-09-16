@@ -320,6 +320,7 @@ export default function Workspace({
         view={view}
         blurred={Boolean(hv)}
         projectPreviewHighlighted={hv === "project" || hv === "prompt"}
+        highlightedProjectId={hv === "project" && projectCreated ? "vendor" : null}
         scheduledHighlighted={hv === "task"}
         newChatHighlighted={hv === "skill"}
         projects={allProjects}

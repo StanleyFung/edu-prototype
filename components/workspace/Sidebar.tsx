@@ -4,6 +4,7 @@ interface SidebarProps {
   view: "chat" | "projects" | "project" | "scheduled";
   blurred: boolean;
   projectPreviewHighlighted: boolean;
+  highlightedProjectId: string | null;
   scheduledHighlighted: boolean;
   newChatHighlighted: boolean;
   projects: Project[];
@@ -18,6 +19,7 @@ export default function Sidebar({
   view,
   blurred,
   projectPreviewHighlighted,
+  highlightedProjectId,
   scheduledHighlighted,
   newChatHighlighted,
   projects,
@@ -123,20 +125,26 @@ export default function Sidebar({
       >
         Projects
       </div>
-      <div
-        className="flex flex-col px-2 transition-[filter] duration-[260ms] ease-in-out"
-        style={{ filter: blurred ? "blur(6px)" : "none" }}
-      >
-        {projects.map((p) => (
-          <button
-            key={p.id}
-            onClick={() => onOpenProject(p.id)}
-            className="flex items-center gap-2.5 px-2 py-1.5 border-none bg-transparent rounded-[7px] cursor-pointer text-[oklch(0.82_0.004_60)] text-[13px] font-sans text-left overflow-hidden hover:bg-hover"
-          >
-            <span className="w-1.5 h-1.5 rounded-sm flex-shrink-0" style={{ background: p.dot }} />
-            <span className="whitespace-nowrap overflow-hidden text-ellipsis">{p.name}</span>
-          </button>
-        ))}
+      <div className="flex flex-col px-2">
+        {projects.map((p) => {
+          const rowHighlighted = highlightedProjectId === p.id;
+          return (
+            <button
+              key={p.id}
+              onClick={() => onOpenProject(p.id)}
+              className="flex items-center gap-2.5 px-2 py-1.5 border-none rounded-[7px] cursor-pointer text-[oklch(0.82_0.004_60)] text-[13px] font-sans text-left overflow-hidden hover:bg-hover transition-[filter,background] duration-200 ease-in-out"
+              style={{
+                background: rowHighlighted ? highlightBg : "transparent",
+                outline: rowHighlighted ? ringStyle : "none",
+                animation: rowHighlighted ? "tern-target 1.9s ease-in-out infinite" : "none",
+                filter: blurred && !rowHighlighted ? "blur(6px)" : "none",
+              }}
+            >
+              <span className="w-1.5 h-1.5 rounded-sm flex-shrink-0" style={{ background: p.dot }} />
+              <span className="whitespace-nowrap overflow-hidden text-ellipsis">{p.name}</span>
+            </button>
+          );
+        })}
       </div>
 
       <div

@@ -140,9 +140,9 @@ export default function ChatView({
                 className="w-[26px] h-[26px] rounded-full cursor-pointer text-sm leading-none font-sans transition-[background,box-shadow,color] duration-200 ease-in-out hover:bg-[oklch(0.28_0.005_60)]"
                 style={{
                   border: `1px solid ${plusHighlighted ? "oklch(0.72 0.12 250)" : "oklch(0.35 0.006 60)"}`,
-                  background: plusHighlighted ? "oklch(0.62 0.16 250 / 0.42)" : "transparent",
+                  background: plusHighlighted ? "oklch(0.62 0.16 250 / 0.22)" : "transparent",
                   outline: plusHighlighted ? "2px solid oklch(0.72 0.12 250)" : "none",
-                  boxShadow: plusHighlighted ? "0 0 0 18px oklch(0.62 0.19 250 / 0.28)" : "none",
+                  boxShadow: plusHighlighted ? "0 0 0 36px oklch(0.62 0.19 250 / 0.28)" : "none",
                   animation: plusHighlighted ? "tern-plus 1.9s ease-in-out infinite" : "none",
                   color: plusHighlighted ? "oklch(0.995 0 0)" : "oklch(0.8 0.006 60)",
                 }}
