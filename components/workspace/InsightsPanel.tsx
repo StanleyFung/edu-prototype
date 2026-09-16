@@ -4,6 +4,7 @@ import type { FilterDef, Insight, InsightFilter, RunState } from "@/lib/types";
 interface InsightsPanelProps {
   open: boolean;
   openCount: number;
+  blurb: string;
   filters: FilterDef[];
   activeFilter: InsightFilter;
   visibleInsights: Insight[];
@@ -22,6 +23,7 @@ interface InsightsPanelProps {
 export default function InsightsPanel({
   open,
   openCount,
+  blurb,
   filters,
   activeFilter,
   visibleInsights,
@@ -52,9 +54,7 @@ export default function InsightsPanel({
             ×
           </button>
         </div>
-        <p className="m-0 text-[13px] leading-[1.5] text-muted-strong text-pretty">
-          Patterns spotted across your chats, with the feature that would handle them.
-        </p>
+        <p className="m-0 text-[13px] leading-[1.5] text-muted-strong text-pretty">{blurb}</p>
         <div className="flex gap-1.5">
           {filters.map((f) => {
             const on = f.id === activeFilter;

@@ -5,12 +5,16 @@ import Sidebar from "./Sidebar";
 import Header from "./Header";
 import ChatView from "./ChatView";
 import ProjectsView from "./ProjectsView";
+import ProjectView from "./ProjectView";
+import InstructionsModal from "./InstructionsModal";
 import ScheduledView from "./ScheduledView";
 import InsightsPanel from "./InsightsPanel";
+import Toast from "./Toast";
 import {
   BASE_TASKS,
   DIGEST_SKILL,
   DRAFT,
+  FILTER_BLURBS,
   FILTERS,
   FOLLOW_UP,
   MESSAGES,
@@ -19,6 +23,9 @@ import {
   RECENTS,
   SKILLS,
   STEPS,
+  TRIAGE_INSTRUCTIONS,
+  VENDOR_FILES,
+  VENDOR_PROJECT,
   VIEW_FOR,
   staticInsightActions,
   staticInsightSource,
@@ -30,12 +37,13 @@ import type {
   InsightFilter,
   InsightKind,
   InsightSource,
+  ProjectDetailSection,
   RunState,
   Skill,
   Task,
 } from "@/lib/types";
 
-type View = "chat" | "projects" | "scheduled";
+type View = "chat" | "projects" | "project" | "scheduled";
 
 interface WorkspaceProps {
   source?: InsightSource;
@@ -65,9 +73,20 @@ export default function Workspace({
   const [replied, setReplied] = useState(false);
   const [newInsight, setNewInsight] = useState(false);
   const [badgeBounce, setBadgeBounce] = useState(false);
+  const [openProject, setOpenProject] = useState<string | null>(null);
+  const [instrEdits, setInstrEdits] = useState<Record<string, string>>({});
+  const [instrModal, setInstrModal] = useState(false);
+  const [instrDraft, setInstrDraft] = useState("");
+  const [projDraft, setProjDraft] = useState("");
+  const [instructionsAdded, setInstructionsAdded] = useState(false);
+  const [projectCreated, setProjectCreated] = useState(false);
+  const [flashedSection, setFlashedSection] = useState<ProjectDetailSection | null>(null);
+  const [toast, setToast] = useState<string | null>(null);
 
   const runTimeouts = useRef<ReturnType<typeof setTimeout>[]>([]);
   const hoverTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const flashTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const toastTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   const threadRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
@@ -86,6 +105,8 @@ export default function Workspace({
     return () => {
       timeouts.forEach(clearTimeout);
       if (hoverTimeout.current) clearTimeout(hoverTimeout.current);
+      if (flashTimeout.current) clearTimeout(flashTimeout.current);
+      if (toastTimeout.current) clearTimeout(toastTimeout.current);
     };
   }, []);
 
@@ -109,6 +130,18 @@ export default function Workspace({
   function scrollThread() {
     const el = threadRef.current;
     if (el) el.scrollTop = el.scrollHeight;
+  }
+
+  function flashToast(msg: string) {
+    if (toastTimeout.current) clearTimeout(toastTimeout.current);
+    setToast(msg);
+    toastTimeout.current = setTimeout(() => setToast(null), 2600);
+  }
+
+  function flashSection(which: ProjectDetailSection) {
+    if (flashTimeout.current) clearTimeout(flashTimeout.current);
+    setFlashedSection(which);
+    flashTimeout.current = setTimeout(() => setFlashedSection(null), 2600);
   }
 
   function send() {
@@ -159,6 +192,8 @@ export default function Workspace({
           setCreatedSkills((prev) => prev.concat([DIGEST_SKILL]));
           setActiveSkills((prev) => prev.concat(DIGEST_SKILL.id));
         }
+        if (insight.kind === "project") setProjectCreated(true);
+        if (insight.kind === "prompt") setInstructionsAdded(true);
         Promise.resolve(actions.accept(insight)).catch(() => {});
       }, def.steps.length * 780)
     );
@@ -179,7 +214,7 @@ export default function Workspace({
   }
 
   function viewInsight(insight: Insight) {
-    const go: View = { task: "scheduled", project: "projects", prompt: "projects", skill: "chat" }[
+    const go: View = { task: "scheduled", project: "project", prompt: "project", skill: "chat" }[
       insight.kind
     ] as View;
     if (hoverTimeout.current) clearTimeout(hoverTimeout.current);
@@ -188,6 +223,14 @@ export default function Workspace({
     setHoverTarget(null);
     setSkillsOpen(insight.kind === "skill");
     setDismissed((prev) => prev.concat(insight.id));
+    if (insight.kind === "project") {
+      setOpenProject("vendor");
+      flashSection("context");
+    }
+    if (insight.kind === "prompt") {
+      setOpenProject("triage");
+      flashSection("instructions");
+    }
   }
 
   function dismissInsight(insight: Insight) {
@@ -212,6 +255,12 @@ export default function Workspace({
     setTaskOff((prev) => (prev.includes(idx) ? prev.filter((x) => x !== idx) : prev.concat(idx)));
   }
 
+  function openProjectDetail(id: string) {
+    setView("project");
+    setOpenProject(id);
+    setSkillsOpen(false);
+  }
+
   const insightPool = useMemo(
     () => (newInsight ? [NEW_INSIGHT, ...allInsights] : allInsights),
     [newInsight, allInsights]
@@ -232,8 +281,31 @@ export default function Workspace({
     return msgs;
   }, [sent, sentText, replied]);
 
+  const allProjects = useMemo(
+    () => (projectCreated ? [VENDOR_PROJECT] : []).concat(PROJECTS),
+    [projectCreated]
+  );
+  const currentProject = useMemo(
+    () => allProjects.find((p) => p.id === openProject) ?? null,
+    [allProjects, openProject]
+  );
+  const baseInstructions =
+    currentProject?.id === "triage" && instructionsAdded ? TRIAGE_INSTRUCTIONS : "";
+  const instrText =
+    currentProject && instrEdits[currentProject.id] !== undefined
+      ? instrEdits[currentProject.id]
+      : baseInstructions;
+  const contextFiles = currentProject?.id === "vendor" ? VENDOR_FILES : [];
+
   const hv = hoverTarget;
-  const headerTitle = view === "chat" ? "Weekly digest for the platform team" : view === "projects" ? "Projects" : "Scheduled";
+  const headerTitle =
+    view === "chat"
+      ? "Weekly digest for the platform team"
+      : view === "projects"
+        ? "Projects"
+        : view === "project"
+          ? (currentProject?.name ?? "Project")
+          : "Scheduled";
 
   function stepStatusText(insight: Insight): string {
     const run = runs[insight.id];
@@ -250,7 +322,7 @@ export default function Workspace({
         projectPreviewHighlighted={hv === "project" || hv === "prompt"}
         scheduledHighlighted={hv === "task"}
         newChatHighlighted={hv === "skill"}
-        projects={PROJECTS}
+        projects={allProjects}
         recents={RECENTS}
         onGoChat={() => setView("chat")}
         onGoProjects={() => {
@@ -261,6 +333,7 @@ export default function Workspace({
           setView("scheduled");
           setSkillsOpen(false);
         }}
+        onOpenProject={openProjectDetail}
       />
 
       <main className="flex-1 min-w-0 flex flex-col relative">
@@ -306,7 +379,33 @@ export default function Workspace({
           />
         )}
 
-        {view === "projects" && <ProjectsView projects={PROJECTS} blurred={Boolean(hv)} />}
+        {view === "projects" && (
+          <ProjectsView
+            projects={allProjects}
+            blurred={Boolean(hv)}
+            onOpenProject={openProjectDetail}
+            onNewProject={() => flashToast("Prototype — project creation isn't wired up")}
+            onNoop={() => flashToast("Prototype — this control isn't wired up")}
+          />
+        )}
+
+        {view === "project" && currentProject && (
+          <ProjectView
+            project={currentProject}
+            instructions={instrText}
+            files={contextFiles}
+            flashSection={flashedSection}
+            draft={projDraft}
+            blurred={Boolean(hv)}
+            onBack={() => setView("projects")}
+            onDraftChange={setProjDraft}
+            onOpenInstructions={() => {
+              setInstrDraft(instrText);
+              setInstrModal(true);
+            }}
+            onNoop={() => flashToast("Prototype — this control isn't wired up")}
+          />
+        )}
 
         {view === "scheduled" && (
           <ScheduledView tasks={baseTasks} taskOff={taskOff} blurred={Boolean(hv)} onToggleTask={toggleTask} />
@@ -323,6 +422,7 @@ export default function Workspace({
       <InsightsPanel
         open={insightsOpen}
         openCount={unresolved.length}
+        blurb={FILTER_BLURBS[filter]}
         filters={FILTERS}
         activeFilter={filter}
         visibleInsights={visibleInsights}
@@ -337,6 +437,20 @@ export default function Workspace({
         onHoverEnd={hoverEnd}
         onDismissAll={dismissAll}
       />
+
+      {instrModal && currentProject && (
+        <InstructionsModal
+          draft={instrDraft}
+          onDraftChange={setInstrDraft}
+          onCancel={() => setInstrModal(false)}
+          onSave={() => {
+            setInstrEdits((prev) => ({ ...prev, [currentProject.id]: instrDraft }));
+            setInstrModal(false);
+          }}
+        />
+      )}
+
+      <Toast message={toast} />
     </div>
   );
 }

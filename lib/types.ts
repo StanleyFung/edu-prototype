@@ -23,11 +23,19 @@ export interface RunSteps {
 }
 
 export interface Project {
+  id: string;
   name: string;
   dot: string;
   desc: string;
   meta: string;
 }
+
+export interface ProjectFile {
+  name: string;
+  meta: string;
+}
+
+export type ProjectDetailSection = "instructions" | "context";
 
 export interface Skill {
   id: string;

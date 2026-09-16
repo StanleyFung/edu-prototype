@@ -1,7 +1,7 @@
 import type { Project } from "@/lib/types";
 
 interface SidebarProps {
-  view: "chat" | "projects" | "scheduled";
+  view: "chat" | "projects" | "project" | "scheduled";
   blurred: boolean;
   projectPreviewHighlighted: boolean;
   scheduledHighlighted: boolean;
@@ -11,6 +11,7 @@ interface SidebarProps {
   onGoChat: () => void;
   onGoProjects: () => void;
   onGoScheduled: () => void;
+  onOpenProject: (id: string) => void;
 }
 
 export default function Sidebar({
@@ -24,6 +25,7 @@ export default function Sidebar({
   onGoChat,
   onGoProjects,
   onGoScheduled,
+  onOpenProject,
 }: SidebarProps) {
   const highlightBg = "oklch(0.58 0.11 250 / 0.5)";
   const ringStyle = "2px solid oklch(0.72 0.12 250)";
@@ -75,7 +77,7 @@ export default function Sidebar({
           style={{
             background: projectPreviewHighlighted
               ? highlightBg
-              : view === "projects"
+              : view === "projects" || view === "project"
                 ? "oklch(0.26 0.005 60)"
                 : "transparent",
             outline: projectPreviewHighlighted ? ringStyle : "none",
@@ -125,10 +127,10 @@ export default function Sidebar({
         className="flex flex-col px-2 transition-[filter] duration-[260ms] ease-in-out"
         style={{ filter: blurred ? "blur(6px)" : "none" }}
       >
-        {projects.slice(0, 3).map((p) => (
+        {projects.map((p) => (
           <button
-            key={p.name}
-            onClick={onGoProjects}
+            key={p.id}
+            onClick={() => onOpenProject(p.id)}
             className="flex items-center gap-2.5 px-2 py-1.5 border-none bg-transparent rounded-[7px] cursor-pointer text-[oklch(0.82_0.004_60)] text-[13px] font-sans text-left overflow-hidden hover:bg-hover"
           >
             <span className="w-1.5 h-1.5 rounded-sm flex-shrink-0" style={{ background: p.dot }} />

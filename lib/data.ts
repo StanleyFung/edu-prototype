@@ -3,9 +3,11 @@ import type {
   FilterDef,
   Insight,
   InsightActions,
+  InsightFilter,
   InsightKind,
   InsightSource,
   Project,
+  ProjectFile,
   RunSteps,
   Skill,
   Task,
@@ -13,30 +15,44 @@ import type {
 
 export const PROJECTS: Project[] = [
   {
+    id: "edu",
     name: "Education Prototype Brainstorming",
     dot: "oklch(0.7 0.1 280)",
     desc: "Concepts and research for the K-12 pilot.",
     meta: "12 chats · 4 files",
   },
   {
+    id: "q3",
     name: "Q3 Reporting",
     dot: "oklch(0.75 0.11 175)",
     desc: "Weekly digests, metrics pulls, exec summaries.",
     meta: "8 chats · 11 files",
   },
   {
+    id: "triage",
     name: "Support Triage",
     dot: "oklch(0.78 0.12 75)",
     desc: "Ticket clustering and response drafting.",
     meta: "23 chats · 2 files",
   },
-  {
-    name: "Hiring Loop",
-    dot: "oklch(0.68 0.06 60)",
-    desc: "Rubrics, debrief notes, scorecard drafts.",
-    meta: "5 chats",
-  },
 ];
+
+export const VENDOR_PROJECT: Project = {
+  id: "vendor",
+  name: "Vendor Security Review",
+  dot: "oklch(0.72 0.1 30)",
+  desc: "SOC 2 reports and questionnaire answers for the three shortlisted vendors.",
+  meta: "6 chats · 3 files",
+};
+
+export const VENDOR_FILES: ProjectFile[] = [
+  { name: "Northwind-SOC2-TypeII-2026.pdf", meta: "84 pages · added just now" },
+  { name: "Cloudmark-SOC2-BridgeLetter.pdf", meta: "6 pages · added just now" },
+  { name: "Orbital-Security-Questionnaire.pdf", meta: "22 pages · added just now" },
+];
+
+export const TRIAGE_INSTRUCTIONS =
+  'Tone: short and direct. No hedging.\n\n• Lead with the answer in the first sentence, then at most two sentences of reasoning.\n• Cut qualifiers — "it depends", "you may want to", "generally speaking", "I think". If something is genuinely uncertain, say so once in plain words and move on.\n• Prefer plain verbs over softeners: "do X" instead of "you might consider doing X".\n• No preamble, no summary of the question back to me, no closing offer to help further.\n• Use the customer\'s wording for their problem rather than internal shorthand.\n• Bullets over paragraphs whenever there is more than one item.';
 
 export const RECENTS: string[] = [
   "Weekly digest for the platform team",
@@ -107,7 +123,8 @@ export const INSIGHTS: Insight[] = [
     id: "i3",
     kind: "project",
     title: "Six chats reference the same three vendor PDFs",
-    detail: "A Project would hold the files once instead of re-uploading them per chat.",
+    detail:
+      "Northwind's SOC 2 Type II, Cloudmark's bridge letter, and Orbital's security questionnaire — you re-upload all three every time you compare the shortlist. A Project would hold them once.",
     action: "Create project",
     meta: "6 chats",
   },
@@ -154,6 +171,16 @@ export const STEPS: Record<InsightKind, RunSteps> = {
     steps: ["Updating…", "Drafting instruction", "Updating Instructions", "Validating"],
     done: "Instructions updated",
   },
+};
+
+export const FILTER_BLURBS: Record<InsightFilter, string> = {
+  all: "Patterns spotted across your chats, with the feature that would handle them.",
+  skill:
+    "Skills save a way of working — a format, a structure, a set of rules — so Claude applies it on demand instead of you restating it each time.",
+  task: "Scheduled Tasks run a prompt on a cadence you set and post the result back in chat, without you starting the conversation.",
+  project:
+    "Projects keep related chats, files, and instructions in one place, so Claude has the same context every time you work there.",
+  prompt: "Patterns spotted across your chats, with the feature that would handle them.",
 };
 
 export const FILTERS: FilterDef[] = [
