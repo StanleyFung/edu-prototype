@@ -201,7 +201,7 @@ export default function ChatView({
               </div>
             )}
           </div>
-          <div className="text-center text-[11.5px] text-[oklch(0.5_0.006_60)] mt-[9px]">
+          <div className="text-center text-[12px] text-[oklch(0.8_0.006_60)] mt-[9px]">
             Prototype — responses are canned. Submit the message or hit Send to view the workflow insight creation
             flow.
           </div>

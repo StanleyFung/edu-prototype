@@ -96,14 +96,6 @@ export const BASE_TASKS: Task[] = [
 
 export const INSIGHTS: Insight[] = [
   {
-    id: "i1",
-    kind: "skill",
-    title: "You've requested the same digest format in four chats",
-    detail: "Saving it as a Skill means you stop restating the format every Monday.",
-    action: "Create skill",
-    meta: "4 chats",
-  },
-  {
     id: "i2",
     kind: "task",
     title: '"Do the same thing next Monday" looks like a recurring job',
@@ -127,14 +119,6 @@ export const INSIGHTS: Insight[] = [
       '"Shorter, no hedging" appears in 9 of the last 14 chats in your Support Triage project. Put it in that project\'s Instructions.',
     action: "Add to Instructions",
     meta: "9 of 14",
-  },
-  {
-    id: "i5",
-    kind: "skill",
-    title: "Your triage replies follow a consistent four-part shape",
-    detail: "Turning it into a Skill would keep the structure stable across teammates.",
-    action: "Create skill",
-    meta: "11 chats",
   },
   {
     id: "i6",

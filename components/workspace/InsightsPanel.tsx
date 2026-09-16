@@ -99,7 +99,7 @@ export default function InsightsPanel({
             <span className="w-2.5 h-2.5 rounded-[3px] bg-[oklch(0.4_0.006_60)]" />
             <div className="text-[13.5px] text-[oklch(0.8_0.004_60)]">Nothing here</div>
             <div className="text-[12.5px] text-[oklch(0.58_0.006_60)] max-w-[240px] leading-[1.5]">
-              New insights appear as Tern notices repeated patterns in your chats.
+              New insights appear as Claude notices repeated patterns in your chats.
             </div>
           </div>
         )}
