@@ -1,4 +1,5 @@
 import InsightCard from "./InsightCard";
+import { ACADEMY_URL } from "@/lib/data";
 import type { FilterDef, Insight, InsightFilter, RunState } from "@/lib/types";
 
 interface InsightsPanelProps {
@@ -54,7 +55,13 @@ export default function InsightsPanel({
             ×
           </button>
         </div>
-        <p className="m-0 text-[13px] leading-[1.5] text-muted-strong text-pretty">{blurb}</p>
+        <p className="m-0 text-[13px] leading-[1.5] text-muted-strong text-pretty">
+          {blurb} Learn more at{" "}
+          <a href={ACADEMY_URL} target="_blank" rel="noopener" className="text-inherit">
+            Claude Academy
+          </a>
+          .
+        </p>
         <div className="flex gap-1.5">
           {filters.map((f) => {
             const on = f.id === activeFilter;
@@ -76,7 +83,9 @@ export default function InsightsPanel({
         </div>
       </div>
 
-      <div className="flex-1 overflow-auto">
+      <div
+        className="flex-1 min-h-0 overflow-y-auto overscroll-contain [scrollbar-width:thin] [scrollbar-color:oklch(0.36_0.006_60)_transparent]"
+      >
         {visibleInsights.map((insight) => {
           const run = runs[insight.id];
           const phase = run ? run.phase : "idle";

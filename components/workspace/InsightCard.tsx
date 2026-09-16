@@ -1,5 +1,6 @@
 import { KIND_COLORS, KIND_DOCS } from "@/lib/data";
 import type { Insight, RunPhase } from "@/lib/types";
+import { InsightFeedbackPanel, InsightFeedbackThumbs, useInsightFeedback } from "./InsightFeedback";
 
 interface InsightCardProps {
   insight: Insight;
@@ -69,6 +70,7 @@ export default function InsightCard({
   const showLearn = phase !== "running";
   const isRunning = phase === "running";
   const isDone = phase === "done";
+  const feedback = useInsightFeedback();
 
   return (
     <div className="group relative flex gap-3 px-4 py-3.5 border-b border-line-soft hover:bg-[oklch(0.235_0.006_60)]">
@@ -127,7 +129,9 @@ export default function InsightCard({
               Dismiss
             </button>
           )}
+          <InsightFeedbackThumbs state={feedback} />
         </div>
+        <InsightFeedbackPanel state={feedback} />
         <div
           className="overflow-hidden transition-[max-height,opacity] duration-[320ms,240ms] ease-[cubic-bezier(0.22,0.61,0.24,1),ease]"
           style={{

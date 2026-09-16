@@ -99,7 +99,7 @@ export const NEW_INSIGHT: Insight = {
   kind: "skill",
   title: "You just corrected the digest format by hand",
   detail:
-    "Saving this exact structure as a Skill would keep every future digest in it without you pasting the template.",
+    "You pasted the Shipped / At risk / Numbers structure to fix this draft. A Skill stores that structure and applies it whenever you ask for a digest, so you stop re-pasting the template after every reply.",
   action: "Create skill",
   meta: "",
 };
@@ -112,19 +112,20 @@ export const BASE_TASKS: Task[] = [
 
 export const INSIGHTS: Insight[] = [
   {
-    id: "i2",
-    kind: "task",
-    title: '"Do the same thing next Monday" looks like a recurring job',
-    detail: "A Scheduled Task can run the digest weekly and post the result here.",
-    action: "Schedule it",
-    meta: "this chat",
+    id: "i1",
+    kind: "skill",
+    title: "You've requested the same digest format in four chats",
+    detail:
+      "In four chats you've restated the same section order and word limit for the platform digest. A Skill saves that format and applies it whenever you ask, so Monday's digest arrives in it without you writing the spec again.",
+    action: "Create skill",
+    meta: "4 chats",
   },
   {
     id: "i3",
     kind: "project",
     title: "Six chats reference the same three vendor PDFs",
     detail:
-      "Northwind's SOC 2 Type II, Cloudmark's bridge letter, and Orbital's security questionnaire — you re-upload all three every time you compare the shortlist. A Project would hold them once.",
+      "Northwind's SOC 2 Type II, Cloudmark's bridge letter, and Orbital's questionnaire get re-uploaded every time you compare the shortlist. A Project keeps all three attached to every chat inside it, so the next comparison starts with them already in context.",
     action: "Create project",
     meta: "6 chats",
   },
@@ -133,15 +134,25 @@ export const INSIGHTS: Insight[] = [
     kind: "prompt",
     title: "You correct tone the same way most sessions",
     detail:
-      '"Shorter, no hedging" appears in 9 of the last 14 chats in your Support Triage project. Put it in that project\'s Instructions.',
+      '"Shorter, no hedging" appears in 9 of your last 14 Support Triage chats. Project Instructions apply that rule to every reply in the project, so you stop correcting tone after the first draft.',
     action: "Add to Instructions",
     meta: "9 of 14",
+  },
+  {
+    id: "i2",
+    kind: "task",
+    title: '"Do the same thing next Monday" looks like a recurring job',
+    detail:
+      "You ended this chat by asking for the same digest next Monday. A Scheduled Task runs the prompt on that cadence and posts the result here, so you stop opening the conversation yourself each week.",
+    action: "Schedule it",
+    meta: "this chat",
   },
   {
     id: "i6",
     kind: "task",
     title: "You check the deploy changelog every morning",
-    detail: "A 8:30am task could summarize overnight changes before you ask.",
+    detail:
+      "For 13 days running, your first message has asked what shipped overnight. A Scheduled Task at 8:30am summarizes the changelog before you arrive, so the answer is waiting instead of being your first prompt.",
     action: "Schedule it",
     meta: "13 days",
   },
@@ -186,8 +197,8 @@ export const FILTER_BLURBS: Record<InsightFilter, string> = {
 export const FILTERS: FilterDef[] = [
   { id: "all", label: "All" },
   { id: "skill", label: "Skills" },
-  { id: "task", label: "Tasks" },
   { id: "project", label: "Projects" },
+  { id: "task", label: "Tasks" },
 ];
 
 export const KIND_COLORS: Record<InsightKind, { bg: string; fg: string }> = {
@@ -205,6 +216,23 @@ export const KIND_DOCS: Record<InsightKind, string> = {
   project: PROJECTS_DOC,
   prompt: PROJECTS_DOC,
 };
+
+/** Labels and accent colors for the inline/intercept insight block's kind eyebrow. */
+export const KIND_LABELS: Record<InsightKind, string> = {
+  skill: "Suggested skill",
+  task: "Suggested task",
+  project: "Suggested project",
+  prompt: "Suggested instruction",
+};
+
+export const KIND_INLINE_FG: Record<InsightKind, string> = {
+  skill: "oklch(0.82 0.09 175)",
+  task: "oklch(0.84 0.1 75)",
+  project: "oklch(0.82 0.08 280)",
+  prompt: "oklch(0.8 0.006 60)",
+};
+
+export const ACADEMY_URL = "https://academy.claude.com/products/claude";
 
 /** Default static InsightSource — swap for a real detection pass later. */
 export const staticInsightSource: InsightSource = {

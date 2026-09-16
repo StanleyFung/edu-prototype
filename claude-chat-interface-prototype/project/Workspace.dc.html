@@ -21,6 +21,8 @@
     ::-webkit-scrollbar-thumb { background: oklch(0.32 0.006 60); border-radius: 6px; border: 3px solid oklch(0.185 0.005 60); }
     ::selection { background: oklch(0.4 0.08 175); }
     @keyframes tern-pulse { 0%,100% { opacity: 1 } 50% { opacity: 0.35 } }
+    @keyframes tern-rise { from { opacity: 0; transform: translateY(8px) } to { opacity: 1; transform: none } }
+    @keyframes tern-spin2 { to { transform: rotate(360deg) } }
     @keyframes tern-bounce { 0% { transform: translateY(0) scale(1) } 15% { transform: translateY(-9px) scale(1.23) } 34% { transform: translateY(0) scale(0.9) } 50% { transform: translateY(-4px) scale(1.1) } 68% { transform: translateY(0) scale(0.96) } 84% { transform: translateY(-1px) scale(1.02) } 100% { transform: translateY(0) scale(1) } }
     @keyframes tern-plus { 0%,100% { box-shadow: 0 0 0 0 oklch(0.62 0.19 250 / 0.6); outline-color: oklch(0.55 0.13 250); background-color: oklch(0.55 0.16 250 / 0.38) } 50% { box-shadow: 0 0 0 42px oklch(0.62 0.19 250 / 0); outline-color: oklch(0.88 0.15 250); background-color: oklch(0.7 0.15 250 / 0.5) } }
     @keyframes tern-target { 0% { box-shadow: 0 0 0 0 oklch(0.62 0.19 250 / 0.6); outline-color: oklch(0.55 0.13 250); background-color: oklch(0.42 0.12 250 / 0.75) } 50% { box-shadow: 0 0 0 14px oklch(0.62 0.19 250 / 0); outline-color: oklch(0.88 0.15 250); background-color: oklch(0.66 0.12 250 / 0.42) } 100% { box-shadow: 0 0 0 0 oklch(0.62 0.19 250 / 0.6); outline-color: oklch(0.55 0.13 250); background-color: oklch(0.42 0.12 250 / 0.75) } }
@@ -94,6 +96,58 @@
               <div style="maxWidth:{{ m.maxWidth }}; background:{{ m.bg }}; borderRadius:{{ m.radius }}; padding:{{ m.pad }}; fontFamily:{{ m.font }}; fontSize:{{ m.size }}; lineHeight:1.62; color:oklch(0.93 0.004 60); textWrap:pretty; whiteSpace:pre-wrap">{{ m.text }}</div>
             </div>
           </sc-for>
+
+          <sc-if value="{{ showBulb }}" hint-placeholder-val="{{ false }}">
+            <div style="position:relative; display:flex; alignItems:center; justifyContent:flex-end; gap:8px; marginTop:-14px; animation: tern-rise 420ms cubic-bezier(0.22, 0.61, 0.24, 1) both">
+              <button onClick="{{ openInsights }}" onMouseEnter="{{ bulbOn }}" onMouseLeave="{{ bulbOff }}" onFocus="{{ bulbOn }}" onBlur="{{ bulbOff }}" aria-label="Workflow insight generated" style="display:flex; alignItems:center; gap:7px; border:1px solid oklch(0.3 0.03 175); background:oklch(0.235 0.015 175); borderRadius:20px; padding:4px 10px 4px 8px; cursor:pointer; fontFamily:inherit; fontSize:11.5px; letterSpacing:0.04em; textTransform:uppercase; color:oklch(0.78 0.07 175)" style-hover="background:oklch(0.28 0.03 175); color:oklch(0.9 0.08 175)">
+                <svg width="13" height="13" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M7.5 1.6a4 4 0 0 0-2.3 7.3v1.4h4.6V8.9a4 4 0 0 0-2.3-7.3z"></path><path d="M6.1 12.1h2.8M6.5 13.6h2"></path></svg>
+                Workflow Insight
+              </button>
+              <sc-if value="{{ bulbHover }}" hint-placeholder-val="{{ false }}">
+                <div style="position:absolute; right:0; bottom:calc(100% + 8px); width:268px; zIndex:25; background:oklch(0.27 0.005 60); border:1px solid oklch(0.36 0.006 60); borderRadius:10px; padding:10px 12px; boxShadow: 0 14px 34px oklch(0.1 0 0 / 0.5); fontSize:12.5px; lineHeight:1.5; color:oklch(0.9 0.004 60); textWrap:pretty; animation: tern-rise 180ms ease both">There's a potential feature Claude has that can help with this! Click or open Workflow Insights to learn more</div>
+              </sc-if>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ showInline }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex; flexDirection:column; gap:9px; border:1px solid oklch(0.3 0.006 60); background:oklch(0.207 0.005 60); borderRadius:12px; padding:15px 17px 14px; animation: tern-rise 420ms cubic-bezier(0.22, 0.61, 0.24, 1) both">
+              <div style="display:flex; alignItems:center; gap:8px">
+                <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="{{ inlKindFg }}" stroke-width="1.2" stroke-linecap="round" style="flexShrink:0"><path d="M7.5 1.6a4 4 0 0 0-2.3 7.3v1.4h4.6V8.9a4 4 0 0 0-2.3-7.3z"></path><path d="M6.1 12.1h2.8M6.5 13.6h2"></path></svg>
+                <span style="fontSize:13px; fontWeight:500; color:{{ inlKindFg }}">Workflow Insights</span>
+                <span style="fontFamily: ui-monospace, Menlo, monospace; fontSize:11px; letterSpacing:0.06em; textTransform:uppercase; color:oklch(0.58 0.006 60)">{{ inlKindLabel }}</span>
+                <span style="marginLeft:auto; fontFamily: ui-monospace, Menlo, monospace; fontSize:11px; color:oklch(0.55 0.006 60)">{{ inlMeta }}</span>
+                <button onClick="{{ inlDismiss }}" title="Dismiss" style="border:none; background:none; padding:0 2px; cursor:pointer; fontFamily:inherit; fontSize:15px; lineHeight:1; color:oklch(0.52 0.006 60)" style-hover="color:oklch(0.92 0.004 60)">×</button>
+              </div>
+              <div style="fontSize:14.5px; lineHeight:1.4; fontWeight:500; color:oklch(0.94 0.004 60); textWrap:pretty">{{ inlTitle }}</div>
+              <div style="fontSize:13.5px; lineHeight:1.6; color:oklch(0.76 0.005 60); textWrap:pretty; maxWidth:60ch">{{ inlDetail }}</div>
+              <div style="display:flex; alignItems:center; gap:10px; marginTop:3px">
+                <sc-if value="{{ inlIdle }}" hint-placeholder-val="{{ true }}">
+                  <button onClick="{{ inlStart }}" style="border:none; borderRadius:7px; padding:6px 13px; fontSize:12.5px; fontWeight:500; fontFamily:inherit; cursor:pointer; background:oklch(0.75 0.11 175); color:oklch(0.2 0.02 175)" style-hover="background:oklch(0.82 0.11 175)">{{ inlAction }}</button>
+                </sc-if>
+                <sc-if value="{{ inlDone }}" hint-placeholder-val="{{ false }}">
+                  <button onClick="{{ inlView }}" style="border:none; borderRadius:7px; padding:6px 15px; fontSize:12.5px; fontWeight:500; fontFamily:inherit; cursor:pointer; background:oklch(0.62 0.15 250); color:oklch(0.98 0.02 250)" style-hover="background:oklch(0.7 0.15 250)">View</button>
+                </sc-if>
+                <sc-if value="{{ inlNotRunning }}" hint-placeholder-val="{{ true }}">
+                  <button onClick="{{ inlDismiss }}" style="border:none; background:none; padding:6px 2px; cursor:pointer; fontFamily:inherit; fontSize:12.5px; color:oklch(0.68 0.006 60)" style-hover="color:oklch(0.95 0.004 60)">{{ inlSecondary }}</button>
+                </sc-if>
+                <a href="{{ inlLearnUrl }}" target="_blank" rel="noopener" style="marginLeft:auto; fontSize:12px; color:oklch(0.62 0.006 60)" style-hover="color:oklch(0.85 0.05 175)">Learn more</a>
+              </div>
+              <div style="overflow:hidden; transition: max-height 320ms cubic-bezier(0.22, 0.61, 0.24, 1), opacity 240ms ease; maxHeight:{{ inlStatusMax }}; opacity:{{ inlStatusOpacity }}">
+                <div style="display:flex; alignItems:center; gap:9px; marginTop:6px; padding:9px 11px; borderRadius:8px; background:{{ inlStatusBg }}; border:1px solid {{ inlStatusBorder }}">
+                  <sc-if value="{{ inlWaiting }}" hint-placeholder-val="{{ false }}">
+                    <span style="width:8px; height:8px; borderRadius:50%; flexShrink:0; background:oklch(0.78 0.12 75); animation: tern-pulse 1.5s ease-in-out infinite"></span>
+                  </sc-if>
+                  <sc-if value="{{ inlRunning }}" hint-placeholder-val="{{ false }}">
+                    <span style="width:12px; height:12px; borderRadius:50%; flexShrink:0; border:1.6px solid oklch(0.45 0.05 250); borderTopColor:oklch(0.85 0.12 250); animation: tern-spin2 0.75s linear infinite"></span>
+                  </sc-if>
+                  <sc-if value="{{ inlDone }}" hint-placeholder-val="{{ false }}">
+                    <span style="width:12px; height:12px; borderRadius:50%; flexShrink:0; background:oklch(0.75 0.11 175); color:oklch(0.2 0.02 175); fontSize:9px; display:flex; alignItems:center; justifyContent:center">✓</span>
+                  </sc-if>
+                  <span style="fontSize:12px; color:{{ inlStatusFg }}">{{ inlStatus }}</span>
+                </div>
+              </div>
+            </div>
+          </sc-if>
         </div>
         <div style="height:24px"></div>
       </div>
@@ -142,7 +196,7 @@
               </div>
             </sc-if>
           </div>
-          <div style="textAlign:center; fontSize:12px; color:oklch(0.8 0.006 60); marginTop:9px">Prototype — responses are canned. Submit the message or hit Send to view the workflow insight creation flow.</div>
+          <div style="textAlign:center; fontSize:11.5px; color:oklch(0.5 0.006 60); marginTop:9px">Prototype — responses are canned. Submit the message or hit Send to view the workflow insight creation flow.</div>
         </div>
       </div>
     </sc-if>
@@ -304,7 +358,7 @@
         <div style="fontSize:11.5px; color:oklch(0.55 0.006 60); fontFamily: ui-monospace, Menlo, monospace">{{ openCount }} open</div>
         <button onClick="{{ closeInsights }}" style="marginLeft:auto; border:none; background:none; cursor:pointer; color:oklch(0.62 0.006 60); fontSize:17px; lineHeight:1; fontFamily:inherit; padding:2px 4px" style-hover="color:oklch(0.92 0.004 60)">×</button>
       </div>
-      <p style="margin:0; fontSize:13px; lineHeight:1.5; color:oklch(0.78 0.005 60); textWrap:pretty">{{ panelBlurb }}</p>
+      <p style="margin:0; fontSize:13px; lineHeight:1.5; color:oklch(0.78 0.005 60); textWrap:pretty">{{ panelBlurb }} Learn more at <a href="https://academy.claude.com/products/claude" target="_blank" rel="noopener">Claude Academy</a>.</p>
       <div style="display:flex; gap:6px">
         <sc-for list="{{ filters }}" as="f" hint-placeholder-count="5">
           <button onClick="{{ f.pick }}" style="border:1px solid {{ f.border }}; background:{{ f.bg }}; color:{{ f.fg }}; borderRadius:20px; padding:4px 11px; fontSize:12px; fontFamily:inherit; cursor:pointer">{{ f.label }}</button>
@@ -312,7 +366,7 @@
       </div>
     </div>
 
-    <div style="flex:1; overflow:auto">
+    <div style="flex:1; minHeight:0; overflowY:auto; overscrollBehavior:contain; scrollbarWidth:thin; scrollbarColor:oklch(0.36 0.006 60) transparent">
       <sc-for list="{{ visibleInsights }}" as="i" hint-placeholder-count="4">
         <dc-import name="InsightCard" kind="{{ i.kind }}" title="{{ i.title }}" detail="{{ i.detail }}" action="{{ i.action }}" meta="{{ i.meta }}" phase="{{ i.phase }}" statusText="{{ i.statusText }}" onStart="{{ i.start }}" onView="{{ i.view }}" onDismiss="{{ i.dismiss }}" onHoverStart="{{ i.hoverStart }}" onHoverEnd="{{ i.hoverEnd }}" hint-size="100%,120px"></dc-import>
       </sc-for>
@@ -320,7 +374,7 @@
         <div style="padding: 56px 28px; textAlign:center; display:flex; flexDirection:column; gap:8px; alignItems:center">
           <span style="width:10px; height:10px; borderRadius:3px; background:oklch(0.4 0.006 60)"></span>
           <div style="fontSize:13.5px; color:oklch(0.8 0.004 60)">Nothing here</div>
-          <div style="fontSize:12.5px; color:oklch(0.58 0.006 60); maxWidth:240px; lineHeight:1.5">New insights appear as Claude notices repeated patterns in your chats.</div>
+          <div style="fontSize:12.5px; color:oklch(0.58 0.006 60); maxWidth:240px; lineHeight:1.5">New insights appear as Tern notices repeated patterns in your chats.</div>
         </div>
       </sc-if>
     </div>
@@ -354,7 +408,7 @@
   </sc-if>
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props="{&quot;insightsInitiallyOpen&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Prototype state&quot;},&quot;initialView&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;chat&quot;,&quot;projects&quot;,&quot;scheduled&quot;],&quot;default&quot;:&quot;chat&quot;,&quot;tsType&quot;:&quot;'chat'|'projects'|'scheduled'&quot;,&quot;section&quot;:&quot;Prototype state&quot;}}">
+<script type="text/x-dc" data-dc-script data-props="{&quot;insightSurface&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;panel&quot;,&quot;inline&quot;,&quot;intercept&quot;],&quot;default&quot;:&quot;panel&quot;,&quot;tsType&quot;:&quot;'panel'|'inline'|'intercept'&quot;,&quot;section&quot;:&quot;Insights&quot;},&quot;insightsInitiallyOpen&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Prototype state&quot;},&quot;initialView&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;chat&quot;,&quot;projects&quot;,&quot;scheduled&quot;],&quot;default&quot;:&quot;chat&quot;,&quot;tsType&quot;:&quot;'chat'|'projects'|'scheduled'&quot;,&quot;section&quot;:&quot;Prototype state&quot;}}">
 const PROJECTS = [
   { id: "edu", name: "Education Prototype Brainstorming", dot: "oklch(0.7 0.1 280)", desc: "Concepts and research for the K-12 pilot.", meta: "12 chats · 4 files" },
   { id: "q3", name: "Q3 Reporting", dot: "oklch(0.75 0.11 175)", desc: "Weekly digests, metrics pulls, exec summaries.", meta: "8 chats · 11 files" },
@@ -392,7 +446,7 @@ const DRAFT = "No that's not right, I want the format to look like this:\n\n## W
 
 const FOLLOW_UP = { role: "ai", text: "Got it — reformatted to that structure.\n\n## Week of Mar 4\n**Shipped** — PLAT-412 queue retries · PLAT-418 audit-log export · PLAT-421 schema migrations\n**At risk** — Rate-limit rewrite, Dana, blocked on load test\n**Numbers** — p95 412ms · error rate 0.28% · queue depth 1.4k" };
 
-const NEW_INSIGHT = { id: "i7", kind: "skill", title: "You just corrected the digest format by hand", detail: "Saving this exact structure as a Skill would keep every future digest in it without you pasting the template.", action: "Create skill" };
+const NEW_INSIGHT = { id: "i7", kind: "skill", title: "You just corrected the digest format by hand", detail: "You pasted the Shipped / At risk / Numbers structure to fix this draft. A Skill stores that structure and applies it whenever you ask for a digest, so you stop re-pasting the template after every reply.", action: "Create skill" };
 
 const MESSAGES = [
   { role: "user", text: "Can you pull together the weekly digest for the platform team again?" },
@@ -400,11 +454,20 @@ const MESSAGES = [
 ];
 
 const INSIGHTS = [
-  { id: "i2", kind: "task", title: "\"Do the same thing next Monday\" looks like a recurring job", detail: "A Scheduled Task can run the digest weekly and post the result here.", action: "Schedule it", meta: "this chat" },
-  { id: "i3", kind: "project", title: "Six chats reference the same three vendor PDFs", detail: "Northwind's SOC 2 Type II, Cloudmark's bridge letter, and Orbital's security questionnaire — you re-upload all three every time you compare the shortlist. A Project would hold them once.", action: "Create project", meta: "6 chats" },
-  { id: "i4", kind: "prompt", title: "You correct tone the same way most sessions", detail: "\"Shorter, no hedging\" appears in 9 of the last 14 chats in your Support Triage project. Put it in that project's Instructions.", action: "Add to Instructions", meta: "9 of 14" },
-  { id: "i6", kind: "task", title: "You check the deploy changelog every morning", detail: "A 8:30am task could summarize overnight changes before you ask.", action: "Schedule it", meta: "13 days" }
+  { id: "i1", kind: "skill", title: "You've requested the same digest format in four chats", detail: "In four chats you've restated the same section order and word limit for the platform digest. A Skill saves that format and applies it whenever you ask, so Monday's digest arrives in it without you writing the spec again.", action: "Create skill", meta: "4 chats" },
+  { id: "i3", kind: "project", title: "Six chats reference the same three vendor PDFs", detail: "Northwind's SOC 2 Type II, Cloudmark's bridge letter, and Orbital's questionnaire get re-uploaded every time you compare the shortlist. A Project keeps all three attached to every chat inside it, so the next comparison starts with them already in context.", action: "Create project", meta: "6 chats" },
+  { id: "i4", kind: "prompt", title: "You correct tone the same way most sessions", detail: "\"Shorter, no hedging\" appears in 9 of your last 14 Support Triage chats. Project Instructions apply that rule to every reply in the project, so you stop correcting tone after the first draft.", action: "Add to Instructions", meta: "9 of 14" },
+  { id: "i2", kind: "task", title: "\"Do the same thing next Monday\" looks like a recurring job", detail: "You ended this chat by asking for the same digest next Monday. A Scheduled Task runs the prompt on that cadence and posts the result here, so you stop opening the conversation yourself each week.", action: "Schedule it", meta: "this chat" },
+  { id: "i6", kind: "task", title: "You check the deploy changelog every morning", detail: "For 13 days running, your first message has asked what shipped overnight. A Scheduled Task at 8:30am summarizes the changelog before you arrive, so the answer is waiting instead of being your first prompt.", action: "Schedule it", meta: "13 days" }
 ];
+
+const PROJECTS_DOC = "https://support.claude.com/en/articles/9517075-what-are-projects";
+const KIND_META = {
+  skill:   { label: "Suggested skill", fg: "oklch(0.82 0.09 175)", doc: "https://support.claude.com/en/articles/12512176-what-are-skills" },
+  task:    { label: "Suggested task", fg: "oklch(0.84 0.1 75)", doc: "https://code.claude.com/docs/en/scheduled-tasks" },
+  project: { label: "Suggested project", fg: "oklch(0.82 0.08 280)", doc: PROJECTS_DOC },
+  prompt:  { label: "Suggested instruction", fg: "oklch(0.8 0.006 60)", doc: PROJECTS_DOC }
+};
 
 const VIEW_FOR = { skill: "chat", task: "scheduled", project: "projects", prompt: "projects" };
 const STEPS = {
@@ -428,8 +491,8 @@ const FILTER_BLURBS = {
 const FILTERS = [
   { id: "all", label: "All" },
   { id: "skill", label: "Skills" },
-  { id: "task", label: "Tasks" },
   { id: "project", label: "Projects" },
+  { id: "task", label: "Tasks" },
 ];
 
 function clampText(text, maxLines, perLine) {
@@ -475,6 +538,7 @@ class Component extends DCLogic {
     instrModal: false,
     instrDraft: "",
     projDraft: "",
+    intercept: false,
     instructionsAdded: false,
     projectCreated: false,
     flashSection: null
@@ -514,12 +578,23 @@ class Component extends DCLogic {
     if (!text || this.state.sent) return;
     this.setState({ draft: "", sent: true, sentText: text });
     requestAnimationFrame(() => { this.grow(); this.scrollThread(); });
+    const surface = this.props.insightSurface ?? "panel";
+    if (surface === "intercept") {
+      setTimeout(() => {
+        this.setState({ intercept: true });
+        requestAnimationFrame(() => this.scrollThread());
+      }, 700);
+      return;
+    }
     setTimeout(() => { this.setState({ replied: true }); requestAnimationFrame(() => this.scrollThread()); }, 700);
+    const inline = surface === "inline";
     setTimeout(() => {
-      this.setState({ newInsight: true, insightsOpen: false, badgeBounce: true });
+      this.setState({ newInsight: true, insightsOpen: false, badgeBounce: !inline });
+      requestAnimationFrame(() => this.scrollThread());
+      if (inline) return;
       setTimeout(() => this.setState({ badgeBounce: false }), 1900);
       this.flash("New workflow insight");
-    }, 1900);
+    }, 1000);
   };
 
   hoverTo(kind) {
@@ -578,6 +653,18 @@ class Component extends DCLogic {
     const baseInstr = cur && cur.id === "triage" && s.instructionsAdded ? TRIAGE_INSTRUCTIONS : "";
     const instrText = cur && s.instrEdits[cur.id] !== undefined ? s.instrEdits[cur.id] : baseInstr;
     const ctxFiles = cur && cur.id === "vendor" ? VENDOR_FILES : [];
+
+    const surface = this.props.insightSurface ?? "panel";
+    const inlineMode = surface === "inline";
+    const interceptMode = surface === "intercept";
+    const inlShow = interceptMode
+      ? s.intercept && !s.replied && !s.dismissed.includes(NEW_INSIGHT.id)
+      : inlineMode && s.newInsight && !s.dismissed.includes(NEW_INSIGHT.id);
+    const inlCand = inlShow ? NEW_INSIGHT : null;
+    const inlRun = inlCand ? s.runs[inlCand.id] : null;
+    const inlDef = inlCand ? (STEPS[inlCand.kind] || STEPS.prompt) : null;
+    const inlKind = inlCand ? (KIND_META[inlCand.kind] || KIND_META.prompt) : KIND_META.prompt;
+    const inlPhase = inlRun ? inlRun.phase : "idle";
 
     const baseTasks = [
       { name: "Platform weekly digest", cadence: "Mondays at 9:00am", next: "in 3 days" },
@@ -701,6 +788,54 @@ class Component extends DCLogic {
       navSchedAnim: hv === "task" ? PULSE : "none",
       plusHlBg: hv === "skill" ? "oklch(0.62 0.16 250 / 0.42)" : "transparent",
       plusColor: hv === "skill" ? "oklch(0.995 0 0)" : "oklch(0.8 0.006 60)",
+      showBulb: surface === "panel" && s.newInsight && !s.dismissed.includes(NEW_INSIGHT.id),
+      bulbHover: s.bulbHover,
+      bulbOn: () => this.setState({ bulbHover: true }),
+      bulbOff: () => this.setState({ bulbHover: false }),
+      openInsights: () => this.setState({ insightsOpen: true, bulbHover: false }),
+
+      showInline: !!inlCand,
+      inlKindLabel: inlKind.label,
+      inlKindFg: inlKind.fg,
+      inlLearnUrl: inlKind.doc,
+      inlTitle: inlCand ? inlCand.title : "",
+      inlDetail: inlCand ? inlCand.detail : "",
+      inlAction: inlCand ? inlCand.action : "",
+      inlMeta: inlCand ? (inlCand.meta || "this chat") : "",
+      inlIdle: inlPhase === "idle",
+      inlRunning: inlPhase === "running",
+      inlDone: inlPhase === "done",
+      inlNotRunning: inlPhase !== "running",
+      inlWaiting: interceptMode && inlPhase === "idle",
+      inlSecondary: interceptMode ? "Ignore and continue" : "Not now",
+      inlStatus: inlRun
+        ? (inlPhase === "done" ? inlDef.done : inlDef.steps[inlRun.step])
+        : interceptMode ? "Waiting for your input — the response is paused" : "",
+      inlStatusBg: interceptMode && inlPhase === "idle" ? "oklch(0.26 0.03 75)" : "oklch(0.26 0.02 250)",
+      inlStatusBorder: interceptMode && inlPhase === "idle" ? "oklch(0.36 0.05 75)" : "oklch(0.34 0.04 250)",
+      inlStatusFg: interceptMode && inlPhase === "idle" ? "oklch(0.9 0.04 75)" : "oklch(0.88 0.02 250)",
+      inlStatusMax: inlPhase !== "idle" || interceptMode ? "60px" : "0px",
+      inlStatusOpacity: inlPhase !== "idle" || interceptMode ? 1 : 0,
+      inlStart: () => {
+        if (!inlCand) return;
+        this.start(inlCand);
+        if (!interceptMode) return;
+        const def = STEPS[inlCand.kind] || STEPS.prompt;
+        setTimeout(() => {
+          this.flash("Skill created — applied to this response");
+          this.setState({ replied: true });
+          requestAnimationFrame(() => this.scrollThread());
+        }, def.steps.length * 780 + 900);
+      },
+      inlView: () => { if (inlCand) this.view(inlCand); },
+      inlDismiss: () => {
+        if (!inlCand) return;
+        const next = { dismissed: s.dismissed.concat(inlCand.id) };
+        if (interceptMode) next.replied = true;
+        this.setState(next);
+        if (interceptMode) requestAnimationFrame(() => this.scrollThread());
+      },
+
       insightsOpen: s.insightsOpen,
       inboxBg: s.insightsOpen ? "oklch(0.3 0.03 175)" : "oklch(0.23 0.005 60)",
       panelTransform: s.insightsOpen ? "translateX(0)" : "translateX(104%)",
@@ -708,7 +843,7 @@ class Component extends DCLogic {
       closeInsights: () => this.setState({ insightsOpen: false }),
       badgeAnim: s.badgeBounce ? "tern-bounce 900ms ease-in-out 2" : "none",
       unreadCount: unresolved.length,
-      hasUnread: unresolved.length > 0,
+      hasUnread: unresolved.length > 0 && !inlineMode && !interceptMode,
       openCount: unresolved.length,
       panelBlurb: FILTER_BLURBS[s.filter] || FILTER_BLURBS.all,
       filters: FILTERS.map(f => {

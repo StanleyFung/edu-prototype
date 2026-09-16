@@ -9,6 +9,7 @@ import ProjectView from "./ProjectView";
 import InstructionsModal from "./InstructionsModal";
 import ScheduledView from "./ScheduledView";
 import InsightsPanel from "./InsightsPanel";
+import InsightBlock from "./InsightBlock";
 import Toast from "./Toast";
 import {
   BASE_TASKS,
@@ -37,6 +38,7 @@ import type {
   InsightFilter,
   InsightKind,
   InsightSource,
+  InsightSurface,
   ProjectDetailSection,
   RunState,
   Skill,
@@ -48,11 +50,13 @@ type View = "chat" | "projects" | "project" | "scheduled";
 interface WorkspaceProps {
   source?: InsightSource;
   actions?: InsightActions;
+  insightSurface?: InsightSurface;
 }
 
 export default function Workspace({
   source = staticInsightSource,
   actions = staticInsightActions,
+  insightSurface = "panel",
 }: WorkspaceProps) {
   const [allInsights, setAllInsights] = useState<Insight[]>([]);
   const [view, setView] = useState<View>("chat");
@@ -72,6 +76,7 @@ export default function Workspace({
   const [sentText, setSentText] = useState("");
   const [replied, setReplied] = useState(false);
   const [newInsight, setNewInsight] = useState(false);
+  const [intercepted, setIntercepted] = useState(false);
   const [badgeBounce, setBadgeBounce] = useState(false);
   const [openProject, setOpenProject] = useState<string | null>(null);
   const [instrEdits, setInstrEdits] = useState<Record<string, string>>({});
@@ -154,6 +159,15 @@ export default function Workspace({
       grow();
       scrollThread();
     });
+
+    if (insightSurface === "intercept") {
+      setTimeout(() => {
+        setIntercepted(true);
+        requestAnimationFrame(() => scrollThread());
+      }, 700);
+      return;
+    }
+
     setTimeout(() => {
       setReplied(true);
       requestAnimationFrame(() => scrollThread());
@@ -161,9 +175,11 @@ export default function Workspace({
     setTimeout(() => {
       setNewInsight(true);
       setInsightsOpen(false);
+      requestAnimationFrame(() => scrollThread());
+      if (insightSurface !== "panel") return;
       setBadgeBounce(true);
       setTimeout(() => setBadgeBounce(false), 1900);
-    }, 1900);
+    }, 1000);
   }
 
   function setRun(id: string, val: RunState) {
@@ -197,6 +213,27 @@ export default function Workspace({
         Promise.resolve(actions.accept(insight)).catch(() => {});
       }, def.steps.length * 780)
     );
+  }
+
+  function inlineStart(insight: Insight) {
+    start(insight);
+    if (insightSurface !== "intercept") return;
+    const def = STEPS[insight.kind];
+    runTimeouts.current.push(
+      setTimeout(() => {
+        flashToast("Skill created — applied to this response");
+        setReplied(true);
+        requestAnimationFrame(() => scrollThread());
+      }, def.steps.length * 780 + 900)
+    );
+  }
+
+  function inlineDismiss(insight: Insight) {
+    setDismissed((prev) => prev.concat(insight.id));
+    if (insightSurface === "intercept") {
+      setReplied(true);
+      requestAnimationFrame(() => scrollThread());
+    }
   }
 
   function hoverTo(kind: InsightKind) {
@@ -272,6 +309,25 @@ export default function Workspace({
     [open, filter]
   );
 
+  const inlineCandidate = useMemo(() => {
+    if (dismissed.includes(NEW_INSIGHT.id)) return null;
+    if (insightSurface === "intercept") {
+      return intercepted && !replied ? NEW_INSIGHT : null;
+    }
+    if (insightSurface === "inline") {
+      return newInsight ? NEW_INSIGHT : null;
+    }
+    return null;
+  }, [insightSurface, intercepted, replied, newInsight, dismissed]);
+  const inlineRun = inlineCandidate ? runs[inlineCandidate.id] : null;
+  const inlinePhase = inlineRun ? inlineRun.phase : "idle";
+  const inlineWaiting = insightSurface === "intercept" && inlinePhase === "idle";
+  const inlineStatusText = inlineRun
+    ? (inlinePhase === "done" ? STEPS[inlineCandidate!.kind].done : STEPS[inlineCandidate!.kind].steps[inlineRun.step])
+    : inlineWaiting
+      ? "Waiting for your input — the response is paused"
+      : "";
+
   const baseTasks = useMemo(() => BASE_TASKS.concat(extraTasks), [extraTasks]);
   const skills = useMemo(() => createdSkills.concat(SKILLS), [createdSkills]);
   const chatMessages = useMemo<ChatMessage[]>(() => {
@@ -342,7 +398,7 @@ export default function Workspace({
           title={headerTitle}
           blurred={Boolean(hv)}
           insightsOpen={insightsOpen}
-          unreadCount={unresolved.length}
+          unreadCount={insightSurface === "panel" ? unresolved.length : 0}
           badgeBounce={badgeBounce}
           onToggleInsights={() => setInsightsOpen((v) => !v)}
         />
@@ -377,6 +433,22 @@ export default function Workspace({
               }
             }}
             onSend={send}
+            showBulb={insightSurface === "panel" && newInsight && !dismissed.includes(NEW_INSIGHT.id)}
+            onOpenInsights={() => setInsightsOpen(true)}
+            inlineInsight={
+              inlineCandidate && (
+                <InsightBlock
+                  insight={inlineCandidate}
+                  phase={inlinePhase}
+                  statusText={inlineStatusText}
+                  waiting={inlineWaiting}
+                  secondaryLabel={insightSurface === "intercept" ? "Ignore and continue" : "Not now"}
+                  onStart={() => inlineStart(inlineCandidate)}
+                  onView={() => viewInsight(inlineCandidate)}
+                  onDismiss={() => inlineDismiss(inlineCandidate)}
+                />
+              )
+            }
           />
         )}
 

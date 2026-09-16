@@ -24,6 +24,25 @@ Original-design AI chat workspace ("Tern") used as a structural stand-in for the
 - Dismiss → row leaves the list, no side effect.
 - Filter chips scope the list; empty state renders when a filter or dismissals clear it.
 
+## Alternative surface — inline suggestion (`insightSurface: "inline"`)
+
+Off by default. Flipping the flag changes *where* an insight appears, not what it does.
+
+- One insight renders as its own block in the thread, directly under the latest assistant response — not a queue: only the insight tied to the current exchange shows (the digest-format pattern at rest; after the user corrects the format, the new insight replaces it).
+- Block anatomy: mono kind eyebrow (`SUGGESTED SKILL`) with a color dot, evidence stat + `×` right-aligned, pattern statement, reason, then `Create skill` / `Not now` and a right-aligned `Learn more`.
+- Accept runs the same progress → `View` sequence as the panel row, in place. `Not now` and `×` remove the block with no side effect.
+- The header badge count is suppressed in this mode (the thread is the notification); the `Workflow Insights` button still opens the panel as the backlog.
+- Open question for the real thing: what happens when two patterns land on the same turn, and whether a dismissed inline suggestion should fall back to the panel rather than disappear.
+
+## Alternative surface — interception (`insightSurface: "intercept"`)
+
+Same block, moved one step earlier: it lands *instead of* the response.
+
+- Submitting the message shows the user turn, then the insight block with a paused status strip (`Waiting for your input — the response is paused`, amber pulse) rather than an answer.
+- `Ignore and continue` releases the response immediately and drops the block.
+- `Create skill` runs the creation steps in place, confirms by toast (`Skill created — applied to this response`), then releases the response.
+- Trade-off to test: this is the only variant that blocks the thing the user actually asked for. Needs a rule for how rarely it can fire, and a timeout that continues on its own.
+
 ## What a real implementation needs (not in the prototype)
 
 1. **Detection** — insights are a static array. Real version needs a pattern-detection pass over conversation history, with a confidence threshold and per-insight dedupe so the same pattern isn't re-surfaced after dismissal.
@@ -42,4 +61,4 @@ Original-design AI chat workspace ("Tern") used as a structural stand-in for the
 
 ## Prototype tweaks
 
-`initialView` (chat / projects / scheduled) and `insightsInitiallyOpen` — for screenshotting states without clicking.
+`insightSurface` (panel / inline / intercept) switches the surface. `initialView` (chat / projects / scheduled) and `insightsInitiallyOpen` — for screenshotting states without clicking.

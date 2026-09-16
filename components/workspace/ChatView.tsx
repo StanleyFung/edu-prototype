@@ -1,4 +1,4 @@
-import type { KeyboardEvent, RefObject } from "react";
+import { useState, type KeyboardEvent, type ReactNode, type RefObject } from "react";
 import type { ChatMessage, Skill } from "@/lib/types";
 
 interface ChatViewProps {
@@ -19,6 +19,47 @@ interface ChatViewProps {
   onDraftChange: (value: string) => void;
   onKeyDown: (e: KeyboardEvent<HTMLTextAreaElement>) => void;
   onSend: () => void;
+  /** panel surface only: shows the "Workflow Insight" bulb chip under the
+   * latest message once a new insight has landed. */
+  showBulb?: boolean;
+  onOpenInsights?: () => void;
+  /** inline/intercept surfaces: the insight block rendered in the thread. */
+  inlineInsight?: ReactNode;
+}
+
+function BulbChip({ onOpen }: { onOpen: () => void }) {
+  const [hover, setHover] = useState(false);
+  return (
+    <div
+      className="relative flex items-center justify-end gap-2 -mt-3.5"
+      style={{ animation: "tern-rise 420ms cubic-bezier(0.22, 0.61, 0.24, 1) both" }}
+    >
+      <button
+        onClick={onOpen}
+        onMouseEnter={() => setHover(true)}
+        onMouseLeave={() => setHover(false)}
+        onFocus={() => setHover(true)}
+        onBlur={() => setHover(false)}
+        aria-label="Workflow insight generated"
+        className="flex items-center gap-[7px] rounded-[20px] pl-2 pr-[10px] py-1 cursor-pointer font-sans text-[11.5px] tracking-[0.04em] uppercase border border-[oklch(0.3_0.03_175)] bg-[oklch(0.235_0.015_175)] text-[oklch(0.78_0.07_175)] hover:bg-[oklch(0.28_0.03_175)] hover:text-[oklch(0.9_0.08_175)]"
+      >
+        <svg width="13" height="13" viewBox="0 0 15 15" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round">
+          <path d="M7.5 1.6a4 4 0 0 0-2.3 7.3v1.4h4.6V8.9a4 4 0 0 0-2.3-7.3z" />
+          <path d="M6.1 12.1h2.8M6.5 13.6h2" />
+        </svg>
+        Workflow Insight
+      </button>
+      {hover && (
+        <div
+          className="absolute right-0 bottom-[calc(100%+8px)] w-[268px] z-[25] bg-[oklch(0.27_0.005_60)] border border-[oklch(0.36_0.006_60)] rounded-[10px] px-3 py-2.5 shadow-[0_14px_34px_oklch(0.1_0_0_/_0.5)] text-[12.5px] leading-[1.5] text-[oklch(0.9_0.004_60)] text-pretty"
+          style={{ animation: "tern-rise 180ms ease both" }}
+        >
+          There&apos;s a potential feature Claude has that can help with this! Click or open Workflow Insights to
+          learn more
+        </div>
+      )}
+    </div>
+  );
 }
 
 export default function ChatView({
@@ -39,6 +80,9 @@ export default function ChatView({
   onDraftChange,
   onKeyDown,
   onSend,
+  showBulb,
+  onOpenInsights,
+  inlineInsight,
 }: ChatViewProps) {
   const activeSkillList = activeSkills
     .map((id) => skills.find((s) => s.id === id))
@@ -67,6 +111,8 @@ export default function ChatView({
               </div>
             )
           )}
+          {showBulb && onOpenInsights && <BulbChip onOpen={onOpenInsights} />}
+          {inlineInsight}
         </div>
         <div className="h-6" />
       </div>
@@ -202,7 +248,7 @@ export default function ChatView({
               </div>
             )}
           </div>
-          <div className="text-center text-[12px] text-[oklch(0.8_0.006_60)] mt-[9px]">
+          <div className="text-center text-[11.5px] text-[oklch(0.5_0.006_60)] mt-[9px]">
             Prototype — responses are canned. Submit the message or hit Send to view the workflow insight creation
             flow.
           </div>

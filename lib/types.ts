@@ -1,5 +1,6 @@
 export type InsightKind = "skill" | "task" | "project" | "prompt";
 export type InsightFilter = "all" | InsightKind;
+export type InsightSurface = "panel" | "inline" | "intercept";
 
 export type RunPhase = "idle" | "running" | "done";
 
