@@ -24,7 +24,8 @@ import {
   RECENTS,
   SKILLS,
   STEPS,
-  TRIAGE_INSTRUCTIONS,
+  TONE_INSTRUCTIONS,
+  TONE_PROJECT,
   VENDOR_FILES,
   VENDOR_PROJECT,
   VIEW_FOR,
@@ -266,11 +267,11 @@ export default function Workspace({
     setSkillsOpen(insight.kind === "skill");
     setDismissed((prev) => prev.concat(insight.id));
     if (insight.kind === "project") {
-      setOpenProject("vendor");
+      setOpenProject(VENDOR_PROJECT.id);
       flashSection("context");
     }
     if (insight.kind === "prompt") {
-      setOpenProject("triage");
+      setOpenProject(TONE_PROJECT.id);
       flashSection("instructions");
     }
   }
@@ -343,15 +344,17 @@ export default function Workspace({
   }, [sent, sentText, replied]);
 
   const allProjects = useMemo(
-    () => (projectCreated ? [VENDOR_PROJECT] : []).concat(PROJECTS),
-    [projectCreated]
+    () =>
+      (projectCreated ? [VENDOR_PROJECT] : [])
+        .concat(instructionsAdded ? [TONE_PROJECT] : [])
+        .concat(PROJECTS),
+    [projectCreated, instructionsAdded]
   );
   const currentProject = useMemo(
     () => allProjects.find((p) => p.id === openProject) ?? null,
     [allProjects, openProject]
   );
-  const baseInstructions =
-    currentProject?.id === "triage" && instructionsAdded ? TRIAGE_INSTRUCTIONS : "";
+  const baseInstructions = currentProject?.id === TONE_PROJECT.id ? TONE_INSTRUCTIONS : "";
   const instrText =
     currentProject && instrEdits[currentProject.id] !== undefined
       ? instrEdits[currentProject.id]
@@ -381,7 +384,13 @@ export default function Workspace({
         view={view}
         blurred={Boolean(hv)}
         projectPreviewHighlighted={hv === "project" || hv === "prompt"}
-        highlightedProjectId={hv === "project" && projectCreated ? "vendor" : null}
+        highlightedProjectId={
+          hv === "project" && projectCreated
+            ? VENDOR_PROJECT.id
+            : hv === "prompt" && instructionsAdded
+              ? TONE_PROJECT.id
+              : null
+        }
         scheduledHighlighted={hv === "task"}
         newChatHighlighted={hv === "skill"}
         projects={allProjects}

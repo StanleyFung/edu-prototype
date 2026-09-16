@@ -51,7 +51,15 @@ export const VENDOR_FILES: ProjectFile[] = [
   { name: "Orbital-Security-Questionnaire.pdf", meta: "22 pages · added just now" },
 ];
 
-export const TRIAGE_INSTRUCTIONS =
+export const TONE_PROJECT: Project = {
+  id: "tone",
+  name: "Support Triage Tone",
+  dot: "oklch(0.76 0.1 130)",
+  desc: "Tone and formatting rules pulled from repeated corrections in Support Triage chats.",
+  meta: "9 of 14 chats",
+};
+
+export const TONE_INSTRUCTIONS =
   'Tone: short and direct. No hedging.\n\n• Lead with the answer in the first sentence, then at most two sentences of reasoning.\n• Cut qualifiers — "it depends", "you may want to", "generally speaking", "I think". If something is genuinely uncertain, say so once in plain words and move on.\n• Prefer plain verbs over softeners: "do X" instead of "you might consider doing X".\n• No preamble, no summary of the question back to me, no closing offer to help further.\n• Use the customer\'s wording for their problem rather than internal shorthand.\n• Bullets over paragraphs whenever there is more than one item.';
 
 export const RECENTS: string[] = [

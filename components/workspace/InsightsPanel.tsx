@@ -41,7 +41,7 @@ export default function InsightsPanel({
 }: InsightsPanelProps) {
   return (
     <div
-      className="fixed top-0 right-0 bottom-0 w-[404px] max-w-[90vw] z-40 bg-panel border-l border-[oklch(0.32_0.006_60)] shadow-[-24px_0_60px_oklch(0.1_0_0_/_0.45)] flex flex-col transition-transform duration-[320ms] ease-[cubic-bezier(0.22,0.61,0.24,1)]"
+      className="fixed top-0 right-0 bottom-0 w-[444px] max-w-[90vw] z-40 bg-panel border-l border-[oklch(0.32_0.006_60)] shadow-[-24px_0_60px_oklch(0.1_0_0_/_0.45)] flex flex-col transition-transform duration-[320ms] ease-[cubic-bezier(0.22,0.61,0.24,1)]"
       style={{ transform: open ? "translateX(0)" : "translateX(104%)" }}
     >
       <div className="p-5 border-b border-[oklch(0.28_0.006_60)] flex flex-col gap-3">
